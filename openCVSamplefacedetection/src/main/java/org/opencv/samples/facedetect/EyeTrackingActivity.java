@@ -390,7 +390,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         MatOfRect faces = new MatOfRect();
 
         if (face_cascade != null) {
-            face_cascade.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
+            face_cascade.detectMultiScale(mGray, faces, 1.1, 2, 2, //TODO: objdetect.CV_HAAR_SCALE_IMAGE
                     new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
         }
 

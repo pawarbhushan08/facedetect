@@ -17,7 +17,13 @@ bool inMat(cv::Point p,int rows,int cols) {
   return p.x >= 0 && p.x < cols && p.y >= 0 && p.y < rows;
 }
 
+
 cv::Mat matrixMagnitude(const cv::Mat &matX, const cv::Mat &matY) {
+  cv::Mat mags(matX.rows,matX.cols,CV_64F);
+  cv::magnitude(matX, matY, mags);
+  return mags;
+}
+/*cv::Mat matrixMagnitude(const cv::Mat &matX, const cv::Mat &matY) {
   cv::Mat mags(matX.rows,matX.cols,CV_64F);
   for (int y = 0; y < matX.rows; ++y) {
     const double *Xr = matX.ptr<double>(y), *Yr = matY.ptr<double>(y);
@@ -29,7 +35,7 @@ cv::Mat matrixMagnitude(const cv::Mat &matX, const cv::Mat &matY) {
     }
   }
   return mags;
-}
+}*/
 
 double computeDynamicThreshold(const cv::Mat &mat, double stdDevFactor) {
   cv::Scalar stdMagnGrad, meanMagnGrad;
