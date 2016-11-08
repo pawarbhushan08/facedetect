@@ -185,7 +185,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         // Change the resolution (best resolution 352x288)
 //        mOpenCvCameraView.setMaxFrameSize(1280, 720);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
+        mOpenCvCameraView.setCameraIndex(JavaCameraView.CAMERA_ID_FRONT);
         mOpenCvCameraView.setMaxFrameSize(640,480);
         mOpenCvCameraView.enableFpsMeter();
         mOpenCvCameraView.setCvCameraViewListener(this);
