@@ -116,10 +116,12 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
                     Log.i(TAG, "OpenCV loaded successfully");
 
                     final InputStream is;
+                    final InputStream eye;
                     FileOutputStream os;
+                    FileOutputStream osEye;
 
                     try {
-                        is = getResources().openRawResource(R.raw.haarcascade_frontalface_alt);
+                        /*is = getResources().openRawResource(R.raw.haarcascade_frontalface_alt);
                         File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
                         mCascadeFile = new File(cascadeDir, "haarcascade_frontalface_alt.xml");
 
@@ -132,8 +134,22 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
                         }
 
                         is.close();
-                        os.close();
+                        os.close();*/
+                        //-------------------------Eye classifier----------------//
+                        eye = getResources().openRawResource(R.raw.haarcascade_lefteye_2splits);
+                        File cascadeDirEye = getDir("cascade", Context.MODE_PRIVATE);
+                        mCascadeFile = new File(cascadeDirEye, "haarcascade_lefteye_2splits.xml");
 
+                        osEye = new FileOutputStream(mCascadeFile);
+
+                        byte[] bufferEye = new byte[4096];
+                        int bytesReadEye;
+                        while ((bytesReadEye = eye.read(bufferEye)) != -1) {
+                            osEye.write(bufferEye, 0, bytesReadEye);
+                        }
+
+                        eye.close();
+                        osEye.close();
                         face_cascade = new CascadeClassifier(mCascadeFile.getAbsolutePath());
                         if (face_cascade.empty()) {
                             Log.e(TAG, "Failed to load cascade classifier");
@@ -141,7 +157,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
                         } else
                             Log.i(TAG, "Loaded cascade classifier from " + mCascadeFile.getAbsolutePath());
 
-                        cascadeDir.delete();
+                        cascadeDirEye.delete();
                     } catch (IOException e) {
                         Log.i(TAG, "face cascade not found");
                     }
@@ -223,7 +239,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         YAxis y1 = mChart.getAxisLeft();
         y1.setTextColor(Color.WHITE);
         y1.setAxisMinValue(60f);
-        y1.setAxisMaxValue(130f);
+        y1.setAxisMaxValue(180f);
         y1.setDrawGridLines(true);
 
         YAxis y12 = mChart.getAxisRight();
@@ -400,7 +416,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         for (Rect aFacesArray : facesArray) {
             Core.rectangle(mGray, aFacesArray.tl(), aFacesArray.br(), FACE_RECT_COLOR, 3);
             xCenter = (aFacesArray.x + aFacesArray.width + aFacesArray.x) / 2;
-            yCenter = (aFacesArray.y + aFacesArray.y + aFacesArray.height) / 2;
+            yCenter = (aFacesArray.y + aFacesArray.y + aFacesArray.height) / 4;
             Point center = new Point(xCenter, yCenter);
 
             Core.circle(mGray, center, 10, new Scalar(255, 255, 255, 255), 3);
@@ -436,27 +452,27 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
 
     	Mat faceROI = frame_gray.submat(face);
 
-    	  int eye_region_width = (int) (face.width * 0.30);
-    	  int eye_region_height = (int) (face.width * 0.25);
-    	  int eye_region_top = (int) (face.height * 0.30);
-    	  int leftEyeRegion_x = (int) (face.width * 0.15);
+    	  int eye_region_width = (int) (face.width * 0.55);
+    	  int eye_region_height = (int) (face.width * 0.45);
+    	  int eye_region_top = (int) (face.height * 0.40);
+    	  int leftEyeRegion_x = (int) (face.width * 0.28);
     	  Rect leftEyeRegion = new Rect(leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height);
     	  int [] leftEyeArray = {leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height};
-    	  Rect rightEyeRegion = new Rect(face.width - eye_region_width - leftEyeRegion_x,
+    	  /*Rect rightEyeRegion = new Rect(face.width - eye_region_width - leftEyeRegion_x,
     			  eye_region_top,eye_region_width,eye_region_height);
     	  int [] rightEyeArray = {face.width - eye_region_width - leftEyeRegion_x,
-    			  eye_region_top,eye_region_width,eye_region_height};
+    			  eye_region_top,eye_region_width,eye_region_height};*/
 
 
     	  // TODO: error when loading the native function
     	  leftEyePoint = findEyeCenter(faceROI.getNativeObjAddr(), leftEyeArray);
-    	  rightEyePoint = findEyeCenter(faceROI.getNativeObjAddr(), rightEyeArray);
+    	  //rightEyePoint = findEyeCenter(faceROI.getNativeObjAddr(), rightEyeArray);
       	  leftPupil = new Point(leftEyePoint[0], leftEyePoint[1]);
-      	  rightPupil = new Point(rightEyePoint[0], rightEyePoint[1]);
+      	  //rightPupil = new Point(rightEyePoint[0], rightEyePoint[1]);
     	  //-- Find Eye Centers
 
-    	  rightPupil.x += Math.round(rightEyeRegion.x + face.x);
-    	  rightPupil.y += Math.round(rightEyeRegion.y + face.y) ;
+    	  //rightPupil.x += Math.round(rightEyeRegion.x + face.x);
+    	  //rightPupil.y += Math.round(rightEyeRegion.y + face.y) ;
     	  leftPupil.x += Math.round(leftEyeRegion.x + face.x);
     	  leftPupil.y += Math.round(leftEyeRegion.y + face.y);
 
@@ -468,7 +484,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
 
 
     	  // draw eye centers
-    	    Core.circle(mGray, rightPupil, 3, FACE_RECT_COLOR);
+    	    //Core.circle(mGray, rightPupil, 3, FACE_RECT_COLOR);
     	    Core.circle(mGray, leftPupil, 3, FACE_RECT_COLOR);
 
             d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);

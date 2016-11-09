@@ -5,7 +5,7 @@
         jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
         jumboMode="true"
         revision="24.0.0"
-        sha1="1515f7cd39950054d5d38eb7277e1e54c95e276f">
+        sha1="3b795a0ff0fa2eb7a6a7e30568b576d11797e75e">
         <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\instant-run-bootstrap_114ac9800abca43a2ed6ec842b52e491ef1f35da.jar" />
     </item>
     <item
@@ -19,7 +19,7 @@
         jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         revision="24.0.0"
-        sha1="ac4bfdf97cf2893648abd676caca0e0d3be8c900">
+        sha1="ae28fd4b9a2c204664bc39b09d8452f657409bc2">
         <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\instant-run_a97e6827b3156975c1a954e31a2c4f021e706c3e.jar" />
     </item>
 
