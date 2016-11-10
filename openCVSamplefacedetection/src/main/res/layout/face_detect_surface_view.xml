@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     tools:context=".EyeTrackingActivity" >
 
-    <org.opencv.android.JavaCameraView
+    <org.opencv.samples.facedetect.CustomizableCameraView
         android:id="@+id/fd_activity_surface_view"
         android:layout_width="640dp"
         android:layout_height="480dp"

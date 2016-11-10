@@ -20,7 +20,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.security.Policy;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -77,7 +80,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
 
     private File 					mCascadeFile;
     private CascadeClassifier     	face_cascade;
-    private CameraBridgeViewBase 	mOpenCvCameraView;
+    private CustomizableCameraView 	mOpenCvCameraView;
 
 	private float                 	mRelativeFaceSize   = 0.5f;
 	private int                     mAbsoluteFaceSize   = 0;
@@ -97,12 +100,8 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
     static double Delta_x,Delta_y;
 
     //GraphView
-
     private LineChart mChart;
     private int lastX = 0;
-
-
-
 
     private static final String TAG = "OCVSample::NDK";
 
@@ -184,9 +183,6 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.face_detect_surface_view);
-
-
-
         Display display = getWindowManager().getDefaultDisplay();
         android.graphics.Point size = new android.graphics.Point();
         display.getSize(size);
@@ -194,9 +190,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         screen_height = size.y;
         Log.i(TAG, "W: " + String.valueOf(screen_width) + " - H: " + String.valueOf(screen_height));
 
-
-
-        mOpenCvCameraView = (JavaCameraView) findViewById(R.id.fd_activity_surface_view);
+        mOpenCvCameraView = (CustomizableCameraView) findViewById(R.id.fd_activity_surface_view);
 
         // Change the resolution (best resolution 352x288)
 //        mOpenCvCameraView.setMaxFrameSize(1280, 720);
@@ -246,9 +240,6 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         y12.setEnabled(false);
 
         //text file
-
-
-
 	}
 
 
@@ -279,38 +270,33 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
                     null);
 
         }
-        catch (IOException e)
-        {
-            Log.e("org.opencv.samples.facedetect","Unable to write to the TraceFile.txt file.");
+        catch (IOException e) {
+            Log.e("facedetect","Unable to write to the TraceFile.txt file.");
         }
     }
-
 
     private void addEntry() {
         LineData data = mChart.getData();
 
-        if (data != null) {
-            LineDataSet set = (LineDataSet) data.getDataSetByIndex(0);
-
-            if (set == null) {
-                set = createSet();
-                data.addDataSet(set);
-            }
+        LineDataSet set = (LineDataSet) data.getDataSetByIndex(0);
+        if (set == null) {
+            set = createSet();
             data.addDataSet(set);
-
-            data.addXValue("");
-
-            data.addEntry(new Entry((float)d, set.getEntryCount()), 0);
-            //data.addEntry(new Entry((float)yPoint,(int)xPoint), 0);
-            mChart.notifyDataSetChanged();
-            mChart.setVisibleXRange(0,6);
-            mChart.moveViewToX(data.getXValCount() - 7);
-
         }
+
+        Entry entry = new Entry((float)d, set.getEntryCount());
+        data.addEntry(entry, 0);
+
+        mChart.notifyDataSetChanged();
+        mChart.setVisibleXRange(0,6);
+        mChart.moveViewToX(data.getXValCount() - 7);
     }
 
     private LineDataSet createSet(){
-        LineDataSet set = new LineDataSet(null,"SPL Db");
+        Date date =new Date();
+        String timeFrame = new SimpleDateFormat("mm:ss.SSSSSS").format(date);
+        LineDataSet set = new LineDataSet(null,timeFrame);
+
         set.setDrawCubic(true);
         set.setCubicIntensity(0.2f);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
@@ -325,7 +311,6 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         return set;
     }
 
-
 	@Override
     public void onPause()
     {
@@ -339,31 +324,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
     {
         super.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mLoaderCallback);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i = 0; i<100; i++){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            addEntry();
-
-                        }
-                    });
-
-                    try {
-                        Thread.sleep(600);
-                    } catch (InterruptedException e) {
-
-                    }
-                }
-            }
-        }).start();
-
     }
-
-
 
     public void onDestroy() {
         super.onDestroy();
@@ -378,6 +339,10 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         scaledMatrix = new Mat();
     	tempMatrix = new Mat();
     	invertcolormatrix= new Mat();
+
+        // Displayes the support FPS range in Logcat ?. Check there
+        mOpenCvCameraView.getSupportedPreviewFpsRange();
+        mOpenCvCameraView.setPreviewFPS(15, 30);
 //    	mretVal = new Mat();
     }
 
@@ -437,65 +402,53 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
 
             findEyes(mGray, aFacesArray);
 
+            addEntry();
             writeTo();
-
         }
-
-
-
-
         return mGray;
-
     }
 
     private Mat findEyes(Mat frame_gray, Rect face) {
 
     	Mat faceROI = frame_gray.submat(face);
 
-    	  int eye_region_width = (int) (face.width * 0.55);
-    	  int eye_region_height = (int) (face.width * 0.45);
-    	  int eye_region_top = (int) (face.height * 0.40);
-    	  int leftEyeRegion_x = (int) (face.width * 0.28);
-    	  Rect leftEyeRegion = new Rect(leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height);
-    	  int [] leftEyeArray = {leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height};
-    	  /*Rect rightEyeRegion = new Rect(face.width - eye_region_width - leftEyeRegion_x,
-    			  eye_region_top,eye_region_width,eye_region_height);
-    	  int [] rightEyeArray = {face.width - eye_region_width - leftEyeRegion_x,
-    			  eye_region_top,eye_region_width,eye_region_height};*/
+        int eye_region_width = (int) (face.width * 0.55);
+        int eye_region_height = (int) (face.width * 0.45);
+        int eye_region_top = (int) (face.height * 0.40);
+        int leftEyeRegion_x = (int) (face.width * 0.28);
+        Rect leftEyeRegion = new Rect(leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height);
+        int [] leftEyeArray = {leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height};
+      /*Rect rightEyeRegion = new Rect(face.width - eye_region_width - leftEyeRegion_x,
+              eye_region_top,eye_region_width,eye_region_height);
+      int [] rightEyeArray = {face.width - eye_region_width - leftEyeRegion_x,
+              eye_region_top,eye_region_width,eye_region_height};*/
 
 
-    	  // TODO: error when loading the native function
-    	  leftEyePoint = findEyeCenter(faceROI.getNativeObjAddr(), leftEyeArray);
-    	  //rightEyePoint = findEyeCenter(faceROI.getNativeObjAddr(), rightEyeArray);
-      	  leftPupil = new Point(leftEyePoint[0], leftEyePoint[1]);
-      	  //rightPupil = new Point(rightEyePoint[0], rightEyePoint[1]);
-    	  //-- Find Eye Centers
+        // TODO: error when loading the native function
+        leftEyePoint = findEyeCenter(faceROI.getNativeObjAddr(), leftEyeArray);
+        //rightEyePoint = findEyeCenter(faceROI.getNativeObjAddr(), rightEyeArray);
+        leftPupil = new Point(leftEyePoint[0], leftEyePoint[1]);
+        //rightPupil = new Point(rightEyePoint[0], rightEyePoint[1]);
+        //-- Find Eye Centers
 
-    	  //rightPupil.x += Math.round(rightEyeRegion.x + face.x);
-    	  //rightPupil.y += Math.round(rightEyeRegion.y + face.y) ;
-    	  leftPupil.x += Math.round(leftEyeRegion.x + face.x);
-    	  leftPupil.y += Math.round(leftEyeRegion.y + face.y);
-
-
-    	  //rightPupil = Math.round(rightPupil);
-    	  //leftPupil = unscalePoint(leftPupil);
-            Delta_x = xCenter - leftPupil.x;
-            Delta_y = yCenter - leftPupil.y;
+        //rightPupil.x += Math.round(rightEyeRegion.x + face.x);
+        //rightPupil.y += Math.round(rightEyeRegion.y + face.y) ;
+        leftPupil.x += Math.round(leftEyeRegion.x + face.x);
+        leftPupil.y += Math.round(leftEyeRegion.y + face.y);
 
 
-    	  // draw eye centers
-    	    //Core.circle(mGray, rightPupil, 3, FACE_RECT_COLOR);
-    	    Core.circle(mGray, leftPupil, 3, FACE_RECT_COLOR);
-
-            d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
-
-			return mGray;
+        //rightPupil = Math.round(rightPupil);
+        //leftPupil = unscalePoint(leftPupil);
+        Delta_x = xCenter - leftPupil.x;
+        Delta_y = yCenter - leftPupil.y;
 
 
+        // draw eye centers
+        //Core.circle(mGray, rightPupil, 3, FACE_RECT_COLOR);
+        Core.circle(mGray, leftPupil, 3, FACE_RECT_COLOR);
 
-    	}
+        d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
 
-
-
-
+        return mGray;
+    }
 }
