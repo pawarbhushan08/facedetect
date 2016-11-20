@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "org.opencv.samples.facedetect"
         minSdkVersion 13
-        targetSdkVersion 19
+        targetSdkVersion 24
 
         ndk {
             moduleName "example"
@@ -35,4 +35,5 @@ repositories {
 dependencies {
     compile project(':openCVLibrary249')
     compile files('src/main/libs/mpandroidchartlibrary-2-2-4.jar')
+    compile 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.1'
 }

@@ -1,7 +1,0 @@
-.idea/
-build/
-.gradle/
-openCVLibrary249/build/
-openCVSamplefacedetection/build/
-*.iml
-local.properties

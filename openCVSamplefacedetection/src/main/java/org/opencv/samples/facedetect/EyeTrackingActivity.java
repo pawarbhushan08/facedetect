@@ -11,8 +11,11 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.*;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.android.Utils;
+import org.w3c.dom.Text;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -27,8 +30,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import android.graphics.Bitmap;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.hardware.Camera;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -38,6 +47,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -47,7 +57,9 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -61,8 +73,10 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import wseemann.media.FFmpegMediaMetadataRetriever;
 
-public class EyeTrackingActivity extends Activity implements CvCameraViewListener2{
+
+public class EyeTrackingActivity extends Activity{
 
     private Context context;
 
@@ -80,7 +94,7 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
 
     private File 					mCascadeFile;
     private CascadeClassifier     	face_cascade;
-    private CustomizableCameraView 	mOpenCvCameraView;
+    private CustomizableCameraView mOpenCvCameraView;
 
 	private float                 	mRelativeFaceSize   = 0.5f;
 	private int                     mAbsoluteFaceSize   = 0;
@@ -97,11 +111,16 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
 	static double scale_factor;
 	Point leftPupil, rightPupil;
     static double d;
+    static double angle1;
+    static double time;
     static double Delta_x,Delta_y;
 
     //GraphView
     private LineChart mChart;
-    private int lastX = 0;
+    //Text file
+
+    private int count = 0;
+
 
     private static final String TAG = "OCVSample::NDK";
 
@@ -160,8 +179,8 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
                     } catch (IOException e) {
                         Log.i(TAG, "face cascade not found");
                     }
-
-                    mOpenCvCameraView.enableView();
+                    loadFrames();
+                    //mOpenCvCameraView.enableView();
                 } break;
                 default:
                 {
@@ -175,11 +194,56 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
       Log.i(TAG, "Instantiated new " + this.getClass());
   }
 
+    public void loadFrames(){
+        File videoFile = new File("/sdcard/myvideo.mp4");
+        //File videoFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/videos","sample_mpeg4.mp4");
+
+
+        Uri videoFileUri= Uri.parse(videoFile.toString());
+
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(videoFile.getAbsolutePath());
+        ArrayList<Bitmap> rev=new ArrayList<Bitmap>();
+
+        //Create a new Media Player
+        MediaPlayer mp = MediaPlayer.create(getBaseContext(), videoFileUri);
+
+        //we are using directly a question from stackoverflow
+        //apply the answer on it
+        //http://stackoverflow.com/questions/12772547/mediametadataretriever-getframeattime-returns-only-first-frame
+        long millis = mp.getDuration();
+        for(long i=0;i<millis*1000;i+=100000){
+            Bitmap bitmap=retriever.getFrameAtTime(i, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+            //rev.add(bitmap);
+            //Log.v("some", "message: ");
+            Mat imgToProcess = new Mat();
+            Mat imgToDest = new Mat();
+            Utils.bitmapToMat(bitmap, imgToProcess);
+            Imgproc.cvtColor(imgToProcess, imgToDest, Imgproc.COLOR_BGR2GRAY);
+            Log.i(TAG, "process");
+            //use imgToDest
+            processFrames(imgToDest);
+
+            Utils.matToBitmap(mGray,bitmap);
+            rev.add(bitmap);
+
+        }
+        try {
+            saveFrames(rev);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "called onCreate");
 		super.onCreate(savedInstanceState);
+        Log.i(TAG, "on create");
+
+
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.face_detect_surface_view);
@@ -190,17 +254,6 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         screen_height = size.y;
         Log.i(TAG, "W: " + String.valueOf(screen_width) + " - H: " + String.valueOf(screen_height));
 
-        mOpenCvCameraView = (CustomizableCameraView) findViewById(R.id.fd_activity_surface_view);
-
-        // Change the resolution (best resolution 352x288)
-//        mOpenCvCameraView.setMaxFrameSize(1280, 720);
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCameraIndex(JavaCameraView.CAMERA_ID_FRONT);
-        mOpenCvCameraView.setMaxFrameSize(640,480);
-        mOpenCvCameraView.enableFpsMeter();
-        mOpenCvCameraView.setCvCameraViewListener(this);
-
-        //GraphView
         LineChart linechart = (LineChart) findViewById(R.id.linechart);
         mChart = new LineChart(this);
         linechart.addView(mChart);
@@ -232,21 +285,76 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
 
         YAxis y1 = mChart.getAxisLeft();
         y1.setTextColor(Color.WHITE);
-        y1.setAxisMinValue(60f);
-        y1.setAxisMaxValue(180f);
+        y1.setAxisMinValue(-100f);
+        y1.setAxisMaxValue(100f);
         y1.setDrawGridLines(true);
 
         YAxis y12 = mChart.getAxisRight();
         y12.setEnabled(false);
 
-        //text file
+
+
+
+
+
+
+        /*mOpenCvCameraView = (CustomizableCameraView) findViewById(R.id.fd_activity_surface_view);
+
+        // Change the resolution (best resolution 352x288)
+//        mOpenCvCameraView.setMaxFrameSize(1280, 720);
+        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setCameraIndex(JavaCameraView.CAMERA_ID_FRONT);
+        mOpenCvCameraView.setMaxFrameSize(640,480);
+        mOpenCvCameraView.enableFpsMeter();
+        mOpenCvCameraView.setPreviewFPS(7,30);
+        mOpenCvCameraView.setCvCameraViewListener(this);*/
+
+        //GraphView
+
+
+        //time variable
+
 	}
 
 
-    public void writeTo()
+
+
+  public void saveFrames(ArrayList<Bitmap> saveBitmapList) throws IOException{
+        //Random r = new Random();
+        //int folder_id = r.nextInt(1000) + 1;
+
+        String folder = "/sdcard/theframes/";
+        File saveFolder=new File(folder);
+        if(!saveFolder.exists()){
+            saveFolder.mkdirs();
+        }
+
+        int i=1;
+        for (Bitmap b : saveBitmapList){
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            b.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+
+            File f = new File(saveFolder,(i+"frame"+".jpg"));
+
+            f.createNewFile();
+
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+
+            fo.flush();
+            fo.close();
+
+            i++;
+        }
+        //Toast.makeText(getApplicationContext(),"Folder id : "+folder_id, Toast.LENGTH_LONG).show();
+
+    }
+
+
+    public void writeTo(double Delta_x,double Delta_y,double time)
     {
         //double a = 5.2;
-        String S = "dX:"+String.valueOf(Delta_x)+"  "+"dY:"+String.valueOf(Delta_y);
+        String S = "dX:"+String.valueOf(Delta_x)+"  "+"dY:"+String.valueOf(Delta_y)+"  "+"t in ms:"+String.valueOf(time)+"  "+"frame"+count++;
         try
         {
             // Creates a trace file in the primary external storage space of the
@@ -274,30 +382,33 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
             Log.e("facedetect","Unable to write to the TraceFile.txt file.");
         }
     }
-
-    private void addEntry() {
+    private void addEntry(double angle1,double time) {
         LineData data = mChart.getData();
 
-        LineDataSet set = (LineDataSet) data.getDataSetByIndex(0);
-        if (set == null) {
-            set = createSet();
+        if (data != null) {
+            LineDataSet set = (LineDataSet) data.getDataSetByIndex(0);
+
+            if (set == null) {
+                set = createSet();
+                data.addDataSet(set);
+            }
             data.addDataSet(set);
+
+            data.addXValue(String.valueOf(time));
+
+            data.addEntry(new Entry((float)angle1, set.getEntryCount()), 0);
+            //data.addEntry(new Entry((float)yPoint,(int)xPoint), 0);
+            mChart.notifyDataSetChanged();
+            mChart.setVisibleXRange(0,10);
+            mChart.moveViewToX(data.getXValCount() - 11);
+
         }
-
-        Entry entry = new Entry((float)d, set.getEntryCount());
-        data.addEntry(entry, 0);
-
-        mChart.notifyDataSetChanged();
-        mChart.setVisibleXRange(0,6);
-        mChart.moveViewToX(data.getXValCount() - 7);
     }
 
     private LineDataSet createSet(){
-        Date date =new Date();
-        String timeFrame = new SimpleDateFormat("mm:ss.SSSSSS").format(date);
-        LineDataSet set = new LineDataSet(null,timeFrame);
-
-        set.setDrawCubic(true);
+        //LineDataSet set = new LineDataSet(new Date().getTime(),"Time");
+        LineDataSet set = new LineDataSet(null,"SPL Db");
+        set.setDrawCubic(false);
         set.setCubicIntensity(0.2f);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setColor(ColorTemplate.getHoloBlue());
@@ -311,12 +422,14 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         return set;
     }
 
+
+
 	@Override
     public void onPause()
     {
         super.onPause();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
+        /*if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();*/
     }
 
     @Override
@@ -324,15 +437,38 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
     {
         super.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mLoaderCallback);
+        /*new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i<1000; i++){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addEntry();
+
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(600);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        }).start();*/
+
     }
+
+
 
     public void onDestroy() {
         super.onDestroy();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
+        /*if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();*/
     }
 
-    public void onCameraViewStarted(int width, int height) {
+    /*public void onCameraViewStarted(int width, int height) {
     	mRgba = new Mat();
     	mGray = new Mat();
         mGrayNew = new Mat();
@@ -341,22 +477,23 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
     	invertcolormatrix= new Mat();
 
         // Displayes the support FPS range in Logcat ?. Check there
-        mOpenCvCameraView.getSupportedPreviewFpsRange();
-        mOpenCvCameraView.setPreviewFPS(15, 30);
+//        mOpenCvCameraView.getSupportedPreviewFpsRange();
+       mOpenCvCameraView.setPreviewFPS(7,30);
 //    	mretVal = new Mat();
-    }
+    }*/
 
-    public void onCameraViewStopped() {
+    /*public void onCameraViewStopped() {
         mGray.release();
         mGrayNew.release();
         scaledMatrix.release();
         tempMatrix.release();
         invertcolormatrix.release();
-    }
+    }*/
 
 
-    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-    	mGray = inputFrame.gray();
+    //public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+    public Mat processFrames(Mat frame) {
+    	mGray = frame;
 
 
     	MatOfPoint pointsMat = new MatOfPoint();
@@ -402,8 +539,10 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
 
             findEyes(mGray, aFacesArray);
 
-            addEntry();
-            writeTo();
+            /*addEntry();
+
+
+            writeTo();*/
         }
         return mGray;
     }
@@ -412,10 +551,10 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
 
     	Mat faceROI = frame_gray.submat(face);
 
-        int eye_region_width = (int) (face.width * 0.55);
+        int eye_region_width = (int) (face.width * 0.70);
         int eye_region_height = (int) (face.width * 0.45);
         int eye_region_top = (int) (face.height * 0.40);
-        int leftEyeRegion_x = (int) (face.width * 0.28);
+        int leftEyeRegion_x = (int) (face.width * 0.13);
         Rect leftEyeRegion = new Rect(leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height);
         int [] leftEyeArray = {leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height};
       /*Rect rightEyeRegion = new Rect(face.width - eye_region_width - leftEyeRegion_x,
@@ -447,7 +586,13 @@ public class EyeTrackingActivity extends Activity implements CvCameraViewListene
         //Core.circle(mGray, rightPupil, 3, FACE_RECT_COLOR);
         Core.circle(mGray, leftPupil, 3, FACE_RECT_COLOR);
 
+
         d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
+        angle1 = (180 - Math.atan2(leftPupil.y - yCenter, leftPupil.x - xCenter)*180/Math.PI);
+        time = SystemClock.currentThreadTimeMillis();
+
+        addEntry(angle1,time);
+        writeTo(Delta_x,Delta_y,time);
 
         return mGray;
     }
