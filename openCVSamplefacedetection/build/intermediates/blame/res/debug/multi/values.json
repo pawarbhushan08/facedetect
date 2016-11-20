@@ -1,0 +1,64 @@
+[
+    {
+        "outputFile": "D:\\face-detection1\\openCVSamplefacedetection\\build\\intermediates\\res\\merged\\debug\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 304,
+                    "endColumn": 57,
+                    "endOffset": 357
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\dimens.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 90,
+                        "endColumn": 57,
+                        "endOffset": 143
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 362,
+                    "endColumn": 55,
+                    "endOffset": 413
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\dimens.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 149,
+                        "endColumn": 55,
+                        "endOffset": 200
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 418,
+                    "endColumn": 55,
+                    "endOffset": 469
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 55,
+                        "endColumn": 55,
+                        "endOffset": 106
+                    }
+                }
+            }
+        ]
+    }
+]

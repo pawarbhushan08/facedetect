@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="FFmpegMediaMetadataRetriever-1.0.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/openCVSamplefacedetection/build/intermediates/exploded-aar/com.github.wseemann/FFmpegMediaMetadataRetriever/1.0.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/openCVSamplefacedetection/build/intermediates/exploded-aar/com.github.wseemann/FFmpegMediaMetadataRetriever/1.0.1/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.wseemann/FFmpegMediaMetadataRetriever/1.0.1/475ca6185b765f72bc4b0213c899db0345807c5b/FFmpegMediaMetadataRetriever-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
