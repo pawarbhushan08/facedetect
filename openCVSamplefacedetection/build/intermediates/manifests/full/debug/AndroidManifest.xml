@@ -52,9 +52,8 @@
             android:name="org.opencv.samples.facedetect.EyeTrackingActivity"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
-            android:screenOrientation="landscape"
-            android:supportsRtl="true" />
-        <activity android:name="org.opencv.samples.facedetect.LoadingActivity" />
+            android:screenOrientation="landscape" />
+        <activity android:name="org.opencv.samples.facedetect.Results" />
     </application>
 
 </manifest>

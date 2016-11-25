@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.hardware.camera2.CameraDevice;
 import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -250,7 +249,8 @@ public class AndroidVideoCaptureExample extends Activity {
 
 
 		mediaRecorder.setOutputFile("/sdcard/myvideo.mp4");
-		mediaRecorder.setCaptureRate(240);
+		mediaRecorder.setCaptureRate(240f);
+
 
 		//mediaRecorder.setVideoEncodingBitRate(20000000);
 

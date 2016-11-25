@@ -1,10 +1,12 @@
 package org.opencv.highgui;
 
-import java.util.List;
-import java.util.LinkedList;
+import android.util.Log;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
+
+import java.util.LinkedList;
+import java.util.List;
 
 // C++: class VideoCapture
 /**
@@ -129,6 +131,8 @@ public class VideoCapture {
         return;
     }
 
+
+
     //
     // C++: double VideoCapture::get(int propId)
     //
@@ -234,11 +238,11 @@ public class VideoCapture {
  *
  * @see <a href="http://docs.opencv.org/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-open">org.opencv.highgui.VideoCapture.open</a>
  */
-    public boolean open(int device)
+    public boolean open(String device)
     {
-
+        Log.v("openning","Openning");
         boolean retVal = n_open(nativeObj, device);
-
+        Log.v("openned1","Openned");
         return retVal;
     }
 

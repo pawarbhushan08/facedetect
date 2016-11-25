@@ -1,18 +1,44 @@
 package org.opencv.samples.facedetect;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.Log;
+import android.view.Display;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.Toast;
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
 import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
-import org.opencv.android.FpsMeter;
-import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.*;
-import org.opencv.objdetect.CascadeClassifier;
-import org.opencv.imgproc.Imgproc;
 import org.opencv.android.Utils;
-import org.w3c.dom.Text;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -21,57 +47,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.security.Policy;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-
-import android.graphics.Bitmap;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.hardware.Camera;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.os.Environment;
-import android.os.SystemClock;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Display;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.DataSet;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import wseemann.media.FFmpegMediaMetadataRetriever;
 
@@ -94,7 +70,7 @@ public class EyeTrackingActivity extends Activity{
 
     private File 					mCascadeFile;
     private CascadeClassifier     	face_cascade;
-    private CustomizableCameraView mOpenCvCameraView;
+
 
 	private float                 	mRelativeFaceSize   = 0.5f;
 	private int                     mAbsoluteFaceSize   = 0;
@@ -105,6 +81,8 @@ public class EyeTrackingActivity extends Activity{
 	int leftEyePoint [] = new int[2];
 	int rightEyePoint [] = new int[2];
 
+
+
 	Point[] calibrationArray = new Point[4];
 
 	int screen_width, screen_height;
@@ -114,6 +92,8 @@ public class EyeTrackingActivity extends Activity{
     static double angle1;
     static double time;
     static double Delta_x,Delta_y;
+
+    private Button button;
 
     //GraphView
     private LineChart mChart;
@@ -180,6 +160,7 @@ public class EyeTrackingActivity extends Activity{
                         Log.i(TAG, "face cascade not found");
                     }
                     loadFrames();
+
                     //mOpenCvCameraView.enableView();
                 } break;
                 default:
@@ -194,48 +175,82 @@ public class EyeTrackingActivity extends Activity{
       Log.i(TAG, "Instantiated new " + this.getClass());
   }
 
-    public void loadFrames(){
-        File videoFile = new File("/sdcard/myvideo.mp4");
+    public void loadFrames() {
+        File videoFile = new File("/sdcard/my_vid/LeftBPBV.mp4");
+        if(videoFile.exists())Log.v("videolog", "exists the file");
+       // new Decoder().execute(videoFile);
         //File videoFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/videos","sample_mpeg4.mp4");
+
 
 
         Uri videoFileUri= Uri.parse(videoFile.toString());
 
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        FFmpegMediaMetadataRetriever retriever = new FFmpegMediaMetadataRetriever();
         retriever.setDataSource(videoFile.getAbsolutePath());
         ArrayList<Bitmap> rev=new ArrayList<Bitmap>();
-
+        String frameRate = retriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_FRAMERATE);
+        String time = retriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
+        int FRate = Integer.parseInt(frameRate);
+        Log.v("FRate",""+FRate);
+        int videoDuration = Integer.parseInt(time);
+        Log.v("VD",""+videoDuration);
         //Create a new Media Player
-        MediaPlayer mp = MediaPlayer.create(getBaseContext(), videoFileUri);
+        /*MediaPlayer mp = MediaPlayer.create(getBaseContext(), videoFileUri);
 
         //we are using directly a question from stackoverflow
         //apply the answer on it
         //http://stackoverflow.com/questions/12772547/mediametadataretriever-getframeattime-returns-only-first-frame
         long millis = mp.getDuration();
-        for(long i=0;i<millis*1000;i+=100000){
-            Bitmap bitmap=retriever.getFrameAtTime(i, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+        Log.v("milliseconds","milliseconds got"+millis);*/
+
+
+        for(long i=0;i<videoDuration;i+=(1000/FRate)){
+
+            Bitmap bitmap=retriever.getFrameAtTime(i*1000, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
             //rev.add(bitmap);
             //Log.v("some", "message: ");
+            Log.v("Time",""+i);
             Mat imgToProcess = new Mat();
             Mat imgToDest = new Mat();
             Utils.bitmapToMat(bitmap, imgToProcess);
             Imgproc.cvtColor(imgToProcess, imgToDest, Imgproc.COLOR_BGR2GRAY);
-            Log.i(TAG, "process");
+            Log.v("process", ""+i);
             //use imgToDest
             processFrames(imgToDest);
-
+            Log.v("ImageProcess","Process done "+i);
             Utils.matToBitmap(mGray,bitmap);
-            rev.add(bitmap);
-
+            //rev.add(bitmap);
+            Log.v("Imageframe","Image frame generated "+i);
         }
-        try {
+        //retriever.release();
+       /*try {
             saveFrames(rev);
         } catch (IOException e) {
+            Log.v("saveerror", "saveerror");
             e.printStackTrace();
-        }
+        }*/
+        Toast.makeText(EyeTrackingActivity.this, "Graph Implemented!", Toast.LENGTH_LONG).show();
     }
 
+    public void addListenerOnButton() {
 
+        final Context context = this;
+
+        button = (Button) findViewById(R.id.btnNext);
+
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                Intent intent = new Intent(context, Results.class);
+                startActivity(intent);
+
+            }
+
+        });
+
+    }
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "called onCreate");
@@ -281,6 +296,8 @@ public class EyeTrackingActivity extends Activity{
         XAxis x1 = mChart.getXAxis();
         x1.setTextColor(Color.WHITE);
         x1.setDrawGridLines(false);
+        /*x1.setAxisMinValue(0f);
+        x1.setAxisMaxValue(1000f);*/
         x1.setAvoidFirstLastClipping(true);
 
         YAxis y1 = mChart.getAxisLeft();
@@ -292,6 +309,7 @@ public class EyeTrackingActivity extends Activity{
         YAxis y12 = mChart.getAxisRight();
         y12.setEnabled(false);
 
+        addListenerOnButton();
 
 
 
@@ -322,12 +340,14 @@ public class EyeTrackingActivity extends Activity{
   public void saveFrames(ArrayList<Bitmap> saveBitmapList) throws IOException{
         //Random r = new Random();
         //int folder_id = r.nextInt(1000) + 1;
-
+        Log.v("Saving", "Start saving");
         String folder = "/sdcard/theframes/";
         File saveFolder=new File(folder);
         if(!saveFolder.exists()){
             saveFolder.mkdirs();
+
         }
+        Log.v("Size of bitmap",""+saveBitmapList.size());
 
         int i=1;
         for (Bitmap b : saveBitmapList){
@@ -343,7 +363,7 @@ public class EyeTrackingActivity extends Activity{
 
             fo.flush();
             fo.close();
-
+            Log.v("FileSaved","FileName"+i);
             i++;
         }
         //Toast.makeText(getApplicationContext(),"Folder id : "+folder_id, Toast.LENGTH_LONG).show();
@@ -403,6 +423,7 @@ public class EyeTrackingActivity extends Activity{
             mChart.moveViewToX(data.getXValCount() - 11);
 
         }
+        Log.v("Graph Generated","At angle"+angle1);
     }
 
     private LineDataSet createSet(){
@@ -493,6 +514,7 @@ public class EyeTrackingActivity extends Activity{
 
     //public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
     public Mat processFrames(Mat frame) {
+        Log.v("Process1","Processing of frame started");
     	mGray = frame;
 
 
@@ -511,16 +533,19 @@ public class EyeTrackingActivity extends Activity{
             face_cascade.detectMultiScale(mGray, faces, 1.1, 2, 2, //TODO: objdetect.CV_HAAR_SCALE_IMAGE
                     new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
         }
-
+        Log.v("Template","Template matched");
         Rect[] facesArray = faces.toArray();
-        if (facesArray.length<1)
-        	return null;
+        if (facesArray.length<1) {
+            Log.v("Nullvalue", "NullValue returned");
+            return null;
+        }
         for (Rect aFacesArray : facesArray) {
+
             Core.rectangle(mGray, aFacesArray.tl(), aFacesArray.br(), FACE_RECT_COLOR, 3);
             xCenter = (aFacesArray.x + aFacesArray.width + aFacesArray.x) / 2;
             yCenter = (aFacesArray.y + aFacesArray.y + aFacesArray.height) / 4;
             Point center = new Point(xCenter, yCenter);
-
+            Log.v("Center","Center located");
             Core.circle(mGray, center, 10, new Scalar(255, 255, 255, 255), 3);
 
             Core.putText(mGray, "[" + center.x + "," + center.y + "]", new Point(center.x + 20, center.y + 20), Core.FONT_HERSHEY_SIMPLEX, 0.7, new Scalar(255, 0, 0, 255));
@@ -539,11 +564,14 @@ public class EyeTrackingActivity extends Activity{
 
             findEyes(mGray, aFacesArray);
 
+
             /*addEntry();
 
 
             writeTo();*/
         }
+        Log.v("Process2","Processing of frames finished");
+
         return mGray;
     }
 
@@ -590,10 +618,65 @@ public class EyeTrackingActivity extends Activity{
         d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
         angle1 = (180 - Math.atan2(leftPupil.y - yCenter, leftPupil.x - xCenter)*180/Math.PI);
         time = SystemClock.currentThreadTimeMillis();
-
+        Log.v("eye center","detected"+d);
         addEntry(angle1,time);
         writeTo(Delta_x,Delta_y,time);
 
         return mGray;
     }
+
+    /*private class Decoder extends AsyncTask<File, Integer, Integer> {
+        private static final String TAG = "DECODER";
+
+        protected Integer doInBackground(File... params) {
+            FileChannelWrapper ch = null;
+            try {
+                ch = NIOUtils.readableFileChannel(params[0]);
+                FrameGrab frameGrab = new FrameGrab(ch);
+                org.jcodec.api.FrameGrab.MediaInfo mi = frameGrab.getMediaInfo();
+                Bitmap frame = Bitmap.createBitmap(mi.getDim().getWidth(), mi.getDim().getHeight(), Bitmap.Config.ARGB_8888);
+
+
+                for (int i = 0; i<200; i++) {
+
+                    frameGrab.getFrame(frame);
+                    if (frame == null)
+                        break;
+                    OutputStream os = null;
+                    try {
+                        os = new BufferedOutputStream(new FileOutputStream(new File(params[0].getParentFile(), String.format("img%08d.jpg", i))));
+                        frame.compress(Bitmap.CompressFormat.JPEG, 90, os);
+                        Log.v("framegenerated",""+i);
+                        Mat imgToProcess = new Mat();
+                        Mat imgToDest = new Mat();
+                        Utils.bitmapToMat(frame, imgToProcess);
+                        Imgproc.cvtColor(imgToProcess, imgToDest, Imgproc.COLOR_BGR2GRAY);
+                        Log.v("process", ""+i);
+                        //use imgToDest
+                        processFrames(imgToDest);
+                        Log.v("ImageProcess","Process done "+i);
+
+                    } finally {
+                        if (os != null)
+                            os.close();
+                    }
+                    publishProgress(i);
+
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "IO", e);
+            } catch (JCodecException e) {
+                Log.e(TAG, "JCodec", e);
+            } finally {
+                NIOUtils.closeQuietly(ch);
+            }
+            return 0;
+        }
+
+       *//* @Override
+        protected void onProgressUpdate(Integer... values) {
+
+            //progress.setText(String.valueOf(values[0]));
+        }*//*
+    }*/
 }

@@ -36,4 +36,5 @@ dependencies {
     compile project(':openCVLibrary249')
     compile files('src/main/libs/mpandroidchartlibrary-2-2-4.jar')
     compile 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.1'
+
 }

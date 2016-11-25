@@ -4,27 +4,27 @@
     api-level="19"
     density="xhdpi"
     format="7"
-    timestamp="2268026582609"
+    timestamp="905841894045"
     token="-8317946512133560713" >
 
     <task
         name="javac"
-        duration="0" />
+        duration="736" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="839" />
+        duration="9014" />
     <task
         name="verifier"
-        duration="12" />
+        duration="508" />
 
     <artifact
         location="D:\face-detection1\openCVSamplefacedetection\build\outputs\apk\openCVSamplefacedetection-debug.apk"
         type="MAIN" />
 
-    <build timestamp="2268026582609" >
+    <build timestamp="905841894045" >
         <artifact
             location="D:\face-detection1\openCVSamplefacedetection\build\outputs\apk\openCVSamplefacedetection-debug.apk"
             type="MAIN" />

@@ -1,3 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\exploded-aar\com.github.wseemann\FFmpegMediaMetadataRetriever\1.0.1\jars\classes.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="e3237df151110a7f4e0f28d1b5ca5483bba2a1b2">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\com.github.wseemann-FFmpegMediaMetadataRetriever-1.0.1_cdebbcd987a0846dc070098af32eab4119fa0d2c.jar" />
+    </item>
+    <item
+        jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="6f36fd532e329c8c446542e2fcc868c62aefce7c">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\instant-run_a97e6827b3156975c1a954e31a2c4f021e706c3e.jar" />
+    </item>
+    <item
+        jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="660960cd7718f0939fc67dac095a965be4de8c2f">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\instant-run-bootstrap_114ac9800abca43a2ed6ec842b52e491ef1f35da.jar" />
+    </item>
+    <item
+        jar="D:\face-detection1\openCVSamplefacedetection\src\main\libs\mpandroidchartlibrary-2-2-4.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="e5455fb794bfcbeb75da252dffd907794614f7fd">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\mpandroidchartlibrary-2-2-4_ccfe7294cfde003fd9490d3414e32afbc11bf892.jar" />
+    </item>
+
+</items>

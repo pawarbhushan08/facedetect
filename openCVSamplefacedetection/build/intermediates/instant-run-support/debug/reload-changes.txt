@@ -1,2 +1,0 @@
-CHANGED,D:\face-detection1\openCVSamplefacedetection\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\org\opencv\samples\facedetect\AndroidVideoCaptureExample$override.class
-CHANGED,D:\face-detection1\openCVSamplefacedetection\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\com\android\tools\fd\runtime\AppPatchesLoaderImpl.class
