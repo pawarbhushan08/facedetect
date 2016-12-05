@@ -7,14 +7,111 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation = "vertical"
     tools:context="org.opencv.samples.facedetect.Results">
+
+    <LinearLayout
+        android:id="@+id/dataLayout"
+        android:layout_width="338dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical" >
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Surname,First Name"
+        android:ems="10"
+        android:id="@+id/patientName"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:inputType="date"
+        android:ems="10"
+        android:id="@+id/DOB"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_below="@+id/patientName"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="Date Of Birth" />
+
+    <RadioGroup
+        android:id="@+id/gender"
+        android:layout_width="221dp"
+        android:layout_height="wrap_content" >
+
+        <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MALE"
+        android:id="@+id/male"
+        android:layout_below="@+id/DOB"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:checked="true" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FEMALE"
+            android:id="@+id/female"
+            android:checked="false"
+            android:layout_below="@+id/DOB"
+            android:layout_centerHorizontal="true" />
+
+    </RadioGroup>
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Examiner"
+        android:ems="10"
+        android:id="@+id/examiner"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/gender"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dip"
+        android:text="Nystagmus Detected"
+        android:id="@+id/TON"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/examiner"
+        android:layout_alignRight="@+id/examiner"
+        android:layout_alignEnd="@+id/examiner" />
+        </LinearLayout>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/save"
+        android:layout_below="@+id/dataLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Exit"
+        android:id="@+id/exit"
+        android:layout_gravity="right"
+        android:layout_below="@+id/save"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="42dp" />
+
 </RelativeLayout>

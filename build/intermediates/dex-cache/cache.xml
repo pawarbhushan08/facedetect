@@ -2,6 +2,13 @@
 <items version="2" >
 
     <item
+        jar="C:\Users\celisca10\.gradle\caches\modules-2\files-2.1\com.github.PhilJay\MPAndroidChart\v3.0.1\369f9aa48a629b4e92557b37326f42dc3de796e4\MPAndroidChart-v3.0.1.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="369f9aa48a629b4e92557b37326f42dc3de796e4">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\MPAndroidChart-v3.0.1_2a004784b2fcd49553dc50990a60a5d63cb342fc.jar" />
+    </item>
+    <item
         jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\exploded-aar\com.github.wseemann\FFmpegMediaMetadataRetriever\1.0.1\jars\classes.jar"
         jumboMode="true"
         revision="24.0.2"
@@ -12,22 +19,22 @@
         jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         revision="24.0.2"
-        sha1="6f36fd532e329c8c446542e2fcc868c62aefce7c">
+        sha1="d942d66b58b25eb2c208c5ea6175868195dec525">
         <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\instant-run_a97e6827b3156975c1a954e31a2c4f021e706c3e.jar" />
     </item>
     <item
         jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
         jumboMode="true"
         revision="24.0.2"
-        sha1="660960cd7718f0939fc67dac095a965be4de8c2f">
+        sha1="1bbb2814318c06c7aec6a7aed42bff25ed722bbf">
         <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\instant-run-bootstrap_114ac9800abca43a2ed6ec842b52e491ef1f35da.jar" />
     </item>
     <item
-        jar="D:\face-detection1\openCVSamplefacedetection\src\main\libs\mpandroidchartlibrary-2-2-4.jar"
+        jar="C:\Users\celisca10\.gradle\caches\modules-2\files-2.1\com.itextpdf\itextg\5.5.10\247811bfc4d8f4e99c909236eadf4dfc6dfa1615\itextg-5.5.10.jar"
         jumboMode="true"
         revision="24.0.2"
-        sha1="e5455fb794bfcbeb75da252dffd907794614f7fd">
-        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\mpandroidchartlibrary-2-2-4_ccfe7294cfde003fd9490d3414e32afbc11bf892.jar" />
+        sha1="247811bfc4d8f4e99c909236eadf4dfc6dfa1615">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\itextg-5.5.10_b7fe713ae8d7a155937962ca89aa78932d819d7a.jar" />
     </item>
 
 </items>

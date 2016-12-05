@@ -15,6 +15,8 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -28,11 +30,13 @@ public class AndroidVideoCaptureExample extends Activity {
 	private Context myContext;
 	private LinearLayout cameraPreview;
 	private boolean cameraFront = false;
+	private RadioGroup selectEye;
+	private RadioButton selectedBtn;
 
 	public void addListenerOnButton() {
 
 		final Context context = this;
-
+		selectEye = (RadioGroup) findViewById(R.id.eyeSelect);
 		button = (Button) findViewById(R.id.button1);
 
 		button.setOnClickListener(new OnClickListener() {
@@ -40,7 +44,16 @@ public class AndroidVideoCaptureExample extends Activity {
 			@Override
 			public void onClick(View arg0) {
 
+				int selectedId = selectEye.getCheckedRadioButtonId();
+				Log.d("ID",""+selectedId);
+				selectedBtn = (RadioButton) findViewById(selectedId);
+
 				Intent intent = new Intent(context, EyeTrackingActivity.class);
+				//intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				intent.putExtra("Eye", selectedBtn.getText()+" Processing");
+				Toast.makeText(AndroidVideoCaptureExample.this,selectedBtn.getText()+" Processing", Toast.LENGTH_SHORT).show();
+				Log.v("btnSelect",""+selectedBtn.getText());
+				Log.v("btnSelect1","helloo");
 				startActivity(intent);
 
 			}
@@ -58,6 +71,9 @@ public class AndroidVideoCaptureExample extends Activity {
 		myContext = this;
 		initialize();
 		addListenerOnButton();
+		if (getIntent().getBooleanExtra("EXIT", false)) {
+			finish();
+		}
 	}
 
 	private int findFrontFacingCamera() {
@@ -248,8 +264,8 @@ public class AndroidVideoCaptureExample extends Activity {
 
 
 
-		mediaRecorder.setOutputFile("/sdcard/myvideo.mp4");
-		mediaRecorder.setCaptureRate(240f);
+		mediaRecorder.setOutputFile("/sdcard/my_Vid/myvideo.mp4");
+
 
 
 		//mediaRecorder.setVideoEncodingBitRate(20000000);
