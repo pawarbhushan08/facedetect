@@ -1,3 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        jar="C:\Users\celisca10\.gradle\caches\modules-2\files-2.1\com.github.PhilJay\MPAndroidChart\v3.0.1\369f9aa48a629b4e92557b37326f42dc3de796e4\MPAndroidChart-v3.0.1.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="369f9aa48a629b4e92557b37326f42dc3de796e4">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\MPAndroidChart-v3.0.1_2a004784b2fcd49553dc50990a60a5d63cb342fc.jar" />
+    </item>
+    <item
+        jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\exploded-aar\com.github.wseemann\FFmpegMediaMetadataRetriever\1.0.1\jars\classes.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="e3237df151110a7f4e0f28d1b5ca5483bba2a1b2">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\com.github.wseemann-FFmpegMediaMetadataRetriever-1.0.1_cdebbcd987a0846dc070098af32eab4119fa0d2c.jar" />
+    </item>
+    <item
+        jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="f9f26f2562222a75f321f86afa108be59f765bbc">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\instant-run_a97e6827b3156975c1a954e31a2c4f021e706c3e.jar" />
+    </item>
+    <item
+        jar="D:\face-detection1\openCVSamplefacedetection\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="fb240d16d5f354f1b339c0968d981a12e99b7fd5">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\instant-run-bootstrap_114ac9800abca43a2ed6ec842b52e491ef1f35da.jar" />
+    </item>
+    <item
+        jar="C:\Users\celisca10\.gradle\caches\modules-2\files-2.1\com.itextpdf\itextg\5.5.10\247811bfc4d8f4e99c909236eadf4dfc6dfa1615\itextg-5.5.10.jar"
+        jumboMode="true"
+        revision="24.0.2"
+        sha1="247811bfc4d8f4e99c909236eadf4dfc6dfa1615">
+        <dex dex="D:\face-detection1\openCVSamplefacedetection\build\intermediates\pre-dexed\debug\itextg-5.5.10_b7fe713ae8d7a155937962ca89aa78932d819d7a.jar" />
+    </item>
+
+</items>

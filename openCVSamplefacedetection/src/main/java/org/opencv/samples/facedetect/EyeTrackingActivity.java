@@ -41,7 +41,6 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -189,7 +188,7 @@ public class EyeTrackingActivity extends Activity{
   }
 
     public void loadFrames() {
-        File videoFile = new File("/sdcard/my_Vid/PendelNystagmus(2)_L.mp4");
+        File videoFile = new File("/sdcard/my_Vid/myvideo.mp4");
         if(videoFile.exists())Log.v("videolog", "exists the file");
        // new Decoder().execute(videoFile);
         //File videoFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/videos","sample_mpeg4.mp4");
@@ -235,19 +234,19 @@ public class EyeTrackingActivity extends Activity{
             //use imgToDest
             processFrames(imgToDest,i);
             Log.v("ImageProcess","Process done "+i);
-            Utils.matToBitmap(mGray,bitmap);
-            rev.add(bitmap);
+            /*Utils.matToBitmap(mGray,bitmap);
+            rev.add(bitmap);*/
             //Toast.makeText(EyeTrackingActivity.this, datatoCollect, Toast.LENGTH_LONG).show();
             Log.v("Imageframe","Image frame generated "+i);
             //mChart.saveToGallery("Result.png",85);
         }
         //retriever.release();
-       try {
+       /*try {
             saveFrames(rev);
         } catch (IOException e) {
             Log.v("saveerror", "saveerror");
             e.printStackTrace();
-        }
+        }*/
         Toast.makeText(EyeTrackingActivity.this, "Graph Implemented!", Toast.LENGTH_LONG).show();
 
     }
@@ -390,7 +389,7 @@ public class EyeTrackingActivity extends Activity{
 
 
 
-  public void saveFrames(ArrayList<Bitmap> saveBitmapList) throws IOException{
+  /*public void saveFrames(ArrayList<Bitmap> saveBitmapList) throws IOException{
         //Random r = new Random();
         //int folder_id = r.nextInt(1000) + 1;
         Log.v("Saving", "Start saving");
@@ -404,6 +403,7 @@ public class EyeTrackingActivity extends Activity{
 
         int i=1;
         for (Bitmap b : saveBitmapList){
+            b = Bitmap.createScaledBitmap(b, 100, 100, true);
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             b.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
 
@@ -413,7 +413,7 @@ public class EyeTrackingActivity extends Activity{
 
             FileOutputStream fo = new FileOutputStream(f);
             fo.write(bytes.toByteArray());
-
+            b.recycle();
             fo.flush();
             fo.close();
             Log.v("FileSaved","FileName"+i);
@@ -421,7 +421,7 @@ public class EyeTrackingActivity extends Activity{
         }
         //Toast.makeText(getApplicationContext(),"Folder id : "+folder_id, Toast.LENGTH_LONG).show();
 
-    }
+    }*/
 
 
     public void writeTo(double dX,double dY,double t)
@@ -435,7 +435,7 @@ public class EyeTrackingActivity extends Activity{
             // Creates a trace file in the primary external storage space of the
             // current application.
             // If the file does not exists, it is created.
-            File traceFile = new File(this.getExternalFilesDir(null),"PendelNystagmus(2)_L.txt");
+            File traceFile = new File(this.getExternalFilesDir(null),"myvideo.txt");
 
             if (!traceFile.exists())
             traceFile.createNewFile();
@@ -458,22 +458,26 @@ public class EyeTrackingActivity extends Activity{
             Log.e("facedetect","Unable to write to the TraceFile.txt file.");
         }
     }
-    private void addEntry(double dataPoints,double Time) {
+    private void addEntry(double dataPoints0,double dataPoints1,double Time) {
         LineData data = mChart.getData();
 
         if (data != null) {
-            ILineDataSet set = data.getDataSetByIndex(0);
+            ILineDataSet set0 = data.getDataSetByIndex(0);
+            ILineDataSet set1 = data.getDataSetByIndex(1);
 
-           if (set == null) {
-                set = createSet();
-                data.addDataSet(set);
+           if (set0 == null || set1 ==null) {
+               set0 = createSet(0);
+               set1 = createSet(1);
+               data.addDataSet(set0);
+               data.addDataSet(set1);
             }
-            data.addDataSet(set);
+            data.addDataSet(set0);
+            data.addDataSet(set1);
 
             //data.addXValue(String.valueOf(time));
             Log.v("XValue",""+(float) Time);
-            data.addEntry(new Entry((float)Time,(float)dataPoints),0);
-
+            data.addEntry(new Entry((float)Time,(float)dataPoints0),0);
+            data.addEntry(new Entry((float)Time,(float)dataPoints1),1);
             data.notifyDataChanged();
             //data.addEntry(new Entry((float)yPoint,(int)xPoint), 0);
             mChart.notifyDataSetChanged();
@@ -481,10 +485,11 @@ public class EyeTrackingActivity extends Activity{
             mChart.moveViewToX(data.getXValCount() - 101);*/
 
         }
-        Log.v("Graph Generated","At angle"+dataPoints+" At time"+Time);
+        Log.v("Graph Generated","At Delta_x "+dataPoints0+" At time"+Time);
+        Log.v("Graph Generated","At Delta_y "+dataPoints1+" At time"+Time);
     }
 
-    private LineDataSet createSet(){
+    private LineDataSet createSet(int flag){
         //LineDataSet set = new LineDataSet(new Date().getTime(),"Time");
 
         LineDataSet set = new LineDataSet(null,"Time");
@@ -492,7 +497,11 @@ public class EyeTrackingActivity extends Activity{
         //set.setDrawCubic(false);//may be set true for pendel for better view
         set.setCubicIntensity(0.1f);//Sets the intensity for cubic lines (if enabled). Max = 1f = very cubic, Min = 0.05f = low cubic effect, Default: 0.2f
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(ColorTemplate.getHoloBlue());
+        if(flag == 0) {
+            set.setColor(ColorTemplate.getHoloBlue());
+        }
+        else
+            set.setColor(Color.BLACK);
         //set.setCircleColor(ColorTemplate.getHoloBlue());
         set.setLineWidth(0.2f);
         //set.setCircleSize(4f);
@@ -655,11 +664,11 @@ public class EyeTrackingActivity extends Activity{
         int [] leftEyeArray = {leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height};
         //Corner detection algorithm
 
-        xCenter = leftEyeRegion.x+face.x;
+        /*xCenter = leftEyeRegion.x+face.x;
         yCenter = leftEyeRegion.y+face.y;
         Point center = new Point(xCenter, yCenter);
         Log.v("Center","Center located");
-        Core.circle(mGray, center, 3, new Scalar(255, 255, 255, 255), 3);
+        Core.circle(mGray, center, 3, new Scalar(255, 255, 255, 255), 3);*/
 
 
         // TODO: error when loading the native function
@@ -674,11 +683,16 @@ public class EyeTrackingActivity extends Activity{
         leftPupil.x += (leftEyeRegion.x+ face.x);
         leftPupil.y += (leftEyeRegion.y+ face.y);
 
+        xCenter = leftEyeRegion.x+eye_region_width/2+face.x;
+        yCenter = leftEyeRegion.y+eye_region_height/2+face.y;
+        Point center = new Point(xCenter, yCenter);
+        Log.v("Center","Center located");
+        Core.circle(mGray, center, 3, new Scalar(255, 255, 255, 255), 3);
 
         //rightPupil = Math.round(rightPupil);
         //leftPupil = unscalePoint(leftPupil);
         Delta_x = (int)leftPupil.x - (int)xCenter;
-        Delta_y = (int) leftPupil.y - (int)yCenter;
+        Delta_y = (int)leftPupil.y - (int)yCenter;
         Log.i(TAG,"xCenter"+String.valueOf(xCenter));
         Log.i(TAG,"left_x"+String.valueOf(leftPupil.x));
         Log.i(TAG,"Delta_x"+String.valueOf(Delta_x));
@@ -696,12 +710,12 @@ public class EyeTrackingActivity extends Activity{
 
 
 
-        //angle1 = Math.toDegrees(Math.atan((Delta_y) / (Delta_x)));
+        angle1 = Math.toDegrees(Math.atan(Delta_y / Delta_x));
 
 
         Log.v("left_y","left_y1"+leftPupil.y);
         //Log.v("eye center","detected"+d);
-        addEntry(Delta_x,time);
+        addEntry(angle1,Delta_y,time);
 
 
         return frame_gray;

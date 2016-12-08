@@ -263,7 +263,8 @@ public class AndroidVideoCaptureExample extends Activity {
 		mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
 		mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
-
+		mediaRecorder.setCaptureRate(200);
+		mediaRecorder.setVideoFrameRate(5);
 
 
 		mediaRecorder.setOutputFile("/sdcard/my_Vid/myvideo.mp4");
