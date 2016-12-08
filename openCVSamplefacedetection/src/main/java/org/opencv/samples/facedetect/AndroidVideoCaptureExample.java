@@ -140,6 +140,7 @@ public class AndroidVideoCaptureExample extends Activity {
 
 		switchCamera = (Button) findViewById(R.id.button_ChangeCamera);
 		switchCamera.setOnClickListener(switchCameraListener);
+
 	}
 
 	OnClickListener switchCameraListener = new OnClickListener() {
@@ -229,6 +230,7 @@ public class AndroidVideoCaptureExample extends Activity {
 						try {
 
 							mediaRecorder.start();
+
 
 						} catch (final Exception ex) {
 							// Log.i("---","Exception in thread");

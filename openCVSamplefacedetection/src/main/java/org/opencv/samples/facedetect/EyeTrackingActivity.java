@@ -41,6 +41,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -71,8 +72,10 @@ public class EyeTrackingActivity extends Activity{
     private CascadeClassifier     	face_cascade;
 
 
-	private float                 	mRelativeFaceSize   = 0.5f;
+	private float                 	mRelativeFaceSize   = 0.5f;//0.5f
 	private int                     mAbsoluteFaceSize   = 0;
+    private boolean                 kSmoothFaceImage = false;
+    private float                   kSmoothFaceFactor = 0.005f;
 
 	double xCenter = -1;
 	double yCenter = -1;
@@ -90,7 +93,7 @@ public class EyeTrackingActivity extends Activity{
 	static double scale_factor;
 	Point leftPupil, rightPupil;
     static double d;
-    static double angle1;
+    static double angle,angle1,angle2,angle3,angle4;
     static double time;
     static double Delta_x,Delta_y;
 
@@ -230,21 +233,21 @@ public class EyeTrackingActivity extends Activity{
             Imgproc.cvtColor(imgToProcess, imgToDest, Imgproc.COLOR_BGR2GRAY);
             Log.v("process", ""+i);
             //use imgToDest
-            processFrames(imgToProcess,i);
+            processFrames(imgToDest,i);
             Log.v("ImageProcess","Process done "+i);
-            //Utils.matToBitmap(mGray,bitmap);
-            //rev.add(bitmap);
+            Utils.matToBitmap(mGray,bitmap);
+            rev.add(bitmap);
             //Toast.makeText(EyeTrackingActivity.this, datatoCollect, Toast.LENGTH_LONG).show();
             Log.v("Imageframe","Image frame generated "+i);
             //mChart.saveToGallery("Result.png",85);
         }
         //retriever.release();
-       /*try {
+       try {
             saveFrames(rev);
         } catch (IOException e) {
             Log.v("saveerror", "saveerror");
             e.printStackTrace();
-        }*/
+        }
         Toast.makeText(EyeTrackingActivity.this, "Graph Implemented!", Toast.LENGTH_LONG).show();
 
     }
@@ -329,8 +332,11 @@ public class EyeTrackingActivity extends Activity{
 
         Legend l = mChart.getLegend();
 
+
         l.setForm(Legend.LegendForm.LINE);
+        l.setPosition(Legend.LegendPosition.BELOW_CHART_LEFT);
         l.setTextColor(Color.WHITE);
+        l.setEnabled(true);
 
         XAxis x1 = mChart.getXAxis();
         x1.setTextColor(Color.WHITE);
@@ -384,7 +390,7 @@ public class EyeTrackingActivity extends Activity{
 
 
 
- /* public void saveFrames(ArrayList<Bitmap> saveBitmapList) throws IOException{
+  public void saveFrames(ArrayList<Bitmap> saveBitmapList) throws IOException{
         //Random r = new Random();
         //int folder_id = r.nextInt(1000) + 1;
         Log.v("Saving", "Start saving");
@@ -415,13 +421,15 @@ public class EyeTrackingActivity extends Activity{
         }
         //Toast.makeText(getApplicationContext(),"Folder id : "+folder_id, Toast.LENGTH_LONG).show();
 
-    }*/
+    }
 
 
-    public void writeTo(double Delta_x,double Delta_y,double time)
+    public void writeTo(double dX,double dY,double t)
     {
         //double a = 5.2;
-        String S = "dX:"+String.valueOf(Delta_x)+"  "+"dY:"+String.valueOf(Delta_y)+"  "+"t in ms:"+String.valueOf(time)+"  "+"frame"+count++;
+
+        String S = "dX:"+String.valueOf(dX)+"  "+"dY:"+String.valueOf(dY)+" "+"t in ms:"+String.valueOf(t)+"  "+"frame"+count++;
+        Log.i(TAG,"S"+S);
         try
         {
             // Creates a trace file in the primary external storage space of the
@@ -432,7 +440,7 @@ public class EyeTrackingActivity extends Activity{
             if (!traceFile.exists())
             traceFile.createNewFile();
             // Adds a line to the trace file
-            BufferedWriter writer = new BufferedWriter(new FileWriter(traceFile, true /*append*/));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(traceFile,true));
             writer.write(S);
             writer.write("\n");
             writer.close();
@@ -450,7 +458,7 @@ public class EyeTrackingActivity extends Activity{
             Log.e("facedetect","Unable to write to the TraceFile.txt file.");
         }
     }
-    private void addEntry(double angle1,double time) {
+    private void addEntry(double dataPoints,double Time) {
         LineData data = mChart.getData();
 
         if (data != null) {
@@ -463,8 +471,8 @@ public class EyeTrackingActivity extends Activity{
             data.addDataSet(set);
 
             //data.addXValue(String.valueOf(time));
-            Log.v("XValue",""+(float) time);
-            data.addEntry(new Entry((float)time,(float)angle1),0);
+            Log.v("XValue",""+(float) Time);
+            data.addEntry(new Entry((float)Time,(float)dataPoints),0);
 
             data.notifyDataChanged();
             //data.addEntry(new Entry((float)yPoint,(int)xPoint), 0);
@@ -473,7 +481,7 @@ public class EyeTrackingActivity extends Activity{
             mChart.moveViewToX(data.getXValCount() - 101);*/
 
         }
-        Log.v("Graph Generated","At angle"+angle1+" At time"+time);
+        Log.v("Graph Generated","At angle"+dataPoints+" At time"+Time);
     }
 
     private LineDataSet createSet(){
@@ -578,6 +586,7 @@ public class EyeTrackingActivity extends Activity{
             if (Math.round(height * mRelativeFaceSize) > 0) {
                 mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
             }
+
         }
 
         MatOfRect faces = new MatOfRect();
@@ -592,17 +601,18 @@ public class EyeTrackingActivity extends Activity{
             Log.v("Nullvalue", "NullValue returned"+time);
             return null;
         }
+
         for (Rect aFacesArray : facesArray) {
             //Log.v("Nullvalue","at time"+facesArray.length+""+time);
             Core.rectangle(mGray, aFacesArray.tl(), aFacesArray.br(), FACE_RECT_COLOR, 3);
-            xCenter = (aFacesArray.x + aFacesArray.width + aFacesArray.x) / 2;
+            /*xCenter = (aFacesArray.x + aFacesArray.width + aFacesArray.x) / 2;
             yCenter = (aFacesArray.y + aFacesArray.y + aFacesArray.height) / 3;
             Point center = new Point(xCenter, yCenter);
-            Log.v("Center","Center located");
+            Log.v("Center","Center located"+String.valueOf(center));
             Core.circle(mGray, center, 10, new Scalar(255, 255, 255, 255), 3);
 
             Core.putText(mGray, "[" + center.x + "," + center.y + "]", new Point(center.x + 20, center.y + 20), Core.FONT_HERSHEY_SIMPLEX, 0.7, new Scalar(255, 0, 0, 255));
-
+*/
             /*scale_factor = screen_width/(double)facesArray[0].width;
 
             facesArray[0].height = (int) (screen_height/scale_factor);
@@ -630,6 +640,11 @@ public class EyeTrackingActivity extends Activity{
 
     private Mat findEyes(Mat frame_gray, Rect face, long time) {
 
+
+            org.opencv.core.Size s = new Size(3,3);
+            Imgproc.GaussianBlur(frame_gray,frame_gray,s,2);
+            Log.v("Gaussian","gaussian blur done");
+
     	Mat faceROI = frame_gray.submat(face);
 
         int eye_region_width = (int) (face.width * 0.75);
@@ -638,7 +653,13 @@ public class EyeTrackingActivity extends Activity{
         int leftEyeRegion_x = (int) (face.width * 0.13);
         Rect leftEyeRegion = new Rect(leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height);
         int [] leftEyeArray = {leftEyeRegion_x,eye_region_top,eye_region_width,eye_region_height};
+        //Corner detection algorithm
 
+        xCenter = leftEyeRegion.x+face.x;
+        yCenter = leftEyeRegion.y+face.y;
+        Point center = new Point(xCenter, yCenter);
+        Log.v("Center","Center located");
+        Core.circle(mGray, center, 3, new Scalar(255, 255, 255, 255), 3);
 
 
         // TODO: error when loading the native function
@@ -650,30 +671,40 @@ public class EyeTrackingActivity extends Activity{
 
         //rightPupil.x += Math.round(rightEyeRegion.x + face.x);
         //rightPupil.y += Math.round(rightEyeRegion.y + face.y) ;
-        leftPupil.x += Math.round(leftEyeRegion.x + face.x);
-        leftPupil.y += Math.round(leftEyeRegion.y + face.y);
+        leftPupil.x += (leftEyeRegion.x+ face.x);
+        leftPupil.y += (leftEyeRegion.y+ face.y);
 
 
         //rightPupil = Math.round(rightPupil);
         //leftPupil = unscalePoint(leftPupil);
-        Delta_x = xCenter - leftPupil.x;
-        Delta_y = yCenter - leftPupil.y;
-
+        Delta_x = (int)leftPupil.x - (int)xCenter;
+        Delta_y = (int) leftPupil.y - (int)yCenter;
+        Log.i(TAG,"xCenter"+String.valueOf(xCenter));
+        Log.i(TAG,"left_x"+String.valueOf(leftPupil.x));
+        Log.i(TAG,"Delta_x"+String.valueOf(Delta_x));
+        Log.i(TAG,"yCenter"+String.valueOf(yCenter));
+        Log.v("left_y","left_y0"+String.valueOf(leftPupil.y));
+        Log.i(TAG,"Delta_y"+String.valueOf(Delta_y));
+        writeTo(Delta_x,Delta_y,time);
 
         // draw eye centers
         //Core.circle(mGray, rightPupil, 3, FACE_RECT_COLOR);
-        Core.circle(mGray, leftPupil, 3, FACE_RECT_COLOR);
-        Log.d("Points","xCenter"+xCenter+"yCenter"+yCenter+"leftPupil.x"+leftPupil.x+"leftPupil.y"+leftPupil.y);
+        Core.circle(frame_gray, leftPupil, 3, FACE_RECT_COLOR);
 
-        d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
 
-        angle1 = Math.toDegrees(Math.atan((Delta_y) / (Delta_x)));
+        //d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
 
-        Log.v("eye center","detected"+d);
-        addEntry(angle1,time);
-        writeTo(Delta_x,Delta_y,time);
 
-        return mGray;
+
+        //angle1 = Math.toDegrees(Math.atan((Delta_y) / (Delta_x)));
+
+
+        Log.v("left_y","left_y1"+leftPupil.y);
+        //Log.v("eye center","detected"+d);
+        addEntry(Delta_x,time);
+
+
+        return frame_gray;
     }
 
     /*private class Decoder extends AsyncTask<File, Integer, Integer> {
