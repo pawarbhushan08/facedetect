@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -188,7 +189,9 @@ public class EyeTrackingActivity extends Activity{
   }
 
     public void loadFrames() {
-        File videoFile = new File("/sdcard/my_Vid/myvideo.mp4");
+        File sdcard = Environment.getExternalStorageDirectory();
+        File  videoFile = new File(sdcard,"/my_Vid/DownBeatA_L.mp4");
+        //File videoFile = new File("/sdcard/my_Vid/LeftBeatingSlowSop_L.mp4");
         if(videoFile.exists())Log.v("videolog", "exists the file");
        // new Decoder().execute(videoFile);
         //File videoFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/videos","sample_mpeg4.mp4");
@@ -202,9 +205,10 @@ public class EyeTrackingActivity extends Activity{
         ArrayList<Bitmap> rev=new ArrayList<Bitmap>();
         String frameRate = retriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_FRAMERATE);
         String time = retriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
-        int FRate = Integer.parseInt(frameRate);
+        long FRate = Long.parseLong(frameRate);
+
         Log.v("FRate",""+FRate);
-        int videoDuration = Integer.parseInt(time);
+        Long videoDuration = Long.parseLong(time);
         Log.v("VD",""+videoDuration);
         //Create a new Media Player
         /*MediaPlayer mp = MediaPlayer.create(getBaseContext(), videoFileUri);
@@ -219,15 +223,18 @@ public class EyeTrackingActivity extends Activity{
         for(long i=0;i<videoDuration;i+=(1000/FRate)){
 
 
-            Bitmap bitmap;
-            bitmap = retriever.getFrameAtTime(i*1000, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
+
+           Bitmap bitmap = retriever.getFrameAtTime(i*1000, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
+
+            //Log.v("bitmap size",":"+bitmap.describeContents());
             //rev.add(bitmap);
             //Log.v("some", "message: ");
             Log.v("Time",""+i);
             Mat imgToProcess = new Mat();
             Mat imgToDest = new Mat();
+            Log.v("ImageOp","Image Mat Generated"+i);
             Utils.bitmapToMat(bitmap, imgToProcess);
-
+            Log.v("ImageOp","bmp to mat done"+i);
 
             Imgproc.cvtColor(imgToProcess, imgToDest, Imgproc.COLOR_BGR2GRAY);
             Log.v("process", ""+i);
@@ -239,6 +246,8 @@ public class EyeTrackingActivity extends Activity{
             //Toast.makeText(EyeTrackingActivity.this, datatoCollect, Toast.LENGTH_LONG).show();
             Log.v("Imageframe","Image frame generated "+i);
             //mChart.saveToGallery("Result.png",85);
+
+
         }
         //retriever.release();
        /*try {
@@ -435,7 +444,7 @@ public class EyeTrackingActivity extends Activity{
             // Creates a trace file in the primary external storage space of the
             // current application.
             // If the file does not exists, it is created.
-            File traceFile = new File(this.getExternalFilesDir(null),"myvideo.txt");
+            File traceFile = new File(this.getExternalFilesDir(null),"DownBeatA_L.txt");
 
             if (!traceFile.exists())
             traceFile.createNewFile();
