@@ -190,7 +190,7 @@ public class EyeTrackingActivity extends Activity{
 
     public void loadFrames() {
         File sdcard = Environment.getExternalStorageDirectory();
-        File  videoFile = new File(sdcard,"/my_Vid/DownBeatA_L.mp4");
+        File  videoFile = new File(sdcard,"/my_Vid/myvideo.mp4");
         //File videoFile = new File("/sdcard/my_Vid/LeftBeatingSlowSop_L.mp4");
         if(videoFile.exists())Log.v("videolog", "exists the file");
        // new Decoder().execute(videoFile);
@@ -205,10 +205,9 @@ public class EyeTrackingActivity extends Activity{
         ArrayList<Bitmap> rev=new ArrayList<Bitmap>();
         String frameRate = retriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_FRAMERATE);
         String time = retriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
-        long FRate = Long.parseLong(frameRate);
-
+        int FRate = Integer.parseInt(frameRate);
         Log.v("FRate",""+FRate);
-        Long videoDuration = Long.parseLong(time);
+        int videoDuration = Integer.parseInt(time);
         Log.v("VD",""+videoDuration);
         //Create a new Media Player
         /*MediaPlayer mp = MediaPlayer.create(getBaseContext(), videoFileUri);
@@ -444,7 +443,7 @@ public class EyeTrackingActivity extends Activity{
             // Creates a trace file in the primary external storage space of the
             // current application.
             // If the file does not exists, it is created.
-            File traceFile = new File(this.getExternalFilesDir(null),"DownBeatA_L.txt");
+            File traceFile = new File(this.getExternalFilesDir(null),"myvideo.txt");
 
             if (!traceFile.exists())
             traceFile.createNewFile();
@@ -715,7 +714,7 @@ public class EyeTrackingActivity extends Activity{
         Core.circle(frame_gray, leftPupil, 3, FACE_RECT_COLOR);
 
 
-        //d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
+        d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
 
 
 
@@ -724,7 +723,7 @@ public class EyeTrackingActivity extends Activity{
 
         Log.v("left_y","left_y1"+leftPupil.y);
         //Log.v("eye center","detected"+d);
-        addEntry(angle1,Delta_y,time);
+        addEntry(Delta_x,d,time);
 
 
         return frame_gray;

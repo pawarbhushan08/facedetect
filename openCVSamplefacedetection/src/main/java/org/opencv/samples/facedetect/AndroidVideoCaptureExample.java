@@ -232,6 +232,7 @@ public class AndroidVideoCaptureExample extends Activity {
 							mediaRecorder.start();
 
 
+
 						} catch (final Exception ex) {
 							// Log.i("---","Exception in thread");
 						}
@@ -263,18 +264,18 @@ public class AndroidVideoCaptureExample extends Activity {
 		mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
 		mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
-		mediaRecorder.setCaptureRate(200);
-		mediaRecorder.setVideoFrameRate(5);
+
 
 
 		mediaRecorder.setOutputFile("/sdcard/my_Vid/myvideo.mp4");
 
-
+		mediaRecorder.setCaptureRate(200);
+		mediaRecorder.setVideoFrameRate(30);
 
 		//mediaRecorder.setVideoEncodingBitRate(20000000);
 
 
-		mediaRecorder.setMaxDuration(600000); // Set max duration 60 sec.
+		mediaRecorder.setMaxDuration(60000); // Set max duration 60 sec.
 		mediaRecorder.setMaxFileSize(50000000); // Set max file size 50M
 
 		try {
