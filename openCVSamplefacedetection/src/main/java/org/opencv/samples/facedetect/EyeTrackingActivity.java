@@ -196,8 +196,6 @@ public class EyeTrackingActivity extends Activity{
        // new Decoder().execute(videoFile);
         //File videoFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/videos","sample_mpeg4.mp4");
 
-
-
         Uri videoFileUri= Uri.parse(videoFile.toString());
 
         FFmpegMediaMetadataRetriever retriever = new FFmpegMediaMetadataRetriever();
@@ -324,6 +322,8 @@ public class EyeTrackingActivity extends Activity{
         mChart.setDrawGridBackground(false);
         mChart.setScaleXEnabled(true);
         mChart.setScaleYEnabled(false);
+        mChart.getDescription().setEnabled(true);
+
 
 
         //mChart.setDoubleTapToZoomEnabled(true);
@@ -413,7 +413,7 @@ public class EyeTrackingActivity extends Activity{
         for (Bitmap b : saveBitmapList){
             b = Bitmap.createScaledBitmap(b, 100, 100, true);
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            b.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+            b.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
 
             File f = new File(saveFolder,(i+"frame"+".jpg"));
 
@@ -481,6 +481,7 @@ public class EyeTrackingActivity extends Activity{
             }
             data.addDataSet(set0);
             data.addDataSet(set1);
+
 
             //data.addXValue(String.valueOf(time));
             Log.v("XValue",""+(float) Time);
@@ -614,7 +615,7 @@ public class EyeTrackingActivity extends Activity{
         }
         Log.v("Template","Template matched");
         Rect[] facesArray = faces.toArray();
-        if (facesArray.length<1) {
+        if (facesArray.length!=1) {
             Log.v("Nullvalue", "NullValue returned"+time);
             return null;
         }
@@ -658,9 +659,9 @@ public class EyeTrackingActivity extends Activity{
     private Mat findEyes(Mat frame_gray, Rect face, long time) {
 
 
-            org.opencv.core.Size s = new Size(3,3);
-            Imgproc.GaussianBlur(frame_gray,frame_gray,s,2);
-            Log.v("Gaussian","gaussian blur done");
+        org.opencv.core.Size s = new Size(3,3);
+        Imgproc.GaussianBlur(frame_gray,frame_gray,s,2);
+        Log.v("Gaussian","gaussian blur done");
 
     	Mat faceROI = frame_gray.submat(face);
 
@@ -691,39 +692,56 @@ public class EyeTrackingActivity extends Activity{
         leftPupil.x += (leftEyeRegion.x+ face.x);
         leftPupil.y += (leftEyeRegion.y+ face.y);
 
-        xCenter = leftEyeRegion.x+eye_region_width/2+face.x;
+        /*if (time == 0){
+            xCenter = leftEyeRegion.x+eye_region_width/2+face.x;
+            yCenter = leftEyeRegion.y+eye_region_height/2+face.y;
+            Point center = new Point(xCenter, yCenter);
+            Log.v("Center","Center located");
+            Core.circle(mGray, center, 3, new Scalar(255, 255, 255, 255), 3);
+
+        }*/
+        Point center = new Point(eye_region_width/2, eye_region_height/2);
+        center.x += (leftEyeRegion_x+face.x);
+        center.y += (eye_region_top+face.y);
+       /* xCenter = leftEyeRegion.x+eye_region_width/2+face.x;
         yCenter = leftEyeRegion.y+eye_region_height/2+face.y;
-        Point center = new Point(xCenter, yCenter);
+        *//*xCenter = leftEyeRegion.x+eye_region_width/2+face.x;
+        yCenter = leftEyeRegion.y+eye_region_height/2+face.y;*//*
+        Point center = new Point(xCenter, yCenter);*/
         Log.v("Center","Center located");
         Core.circle(mGray, center, 3, new Scalar(255, 255, 255, 255), 3);
 
         //rightPupil = Math.round(rightPupil);
         //leftPupil = unscalePoint(leftPupil);
-        Delta_x = (int)leftPupil.x - (int)xCenter;
-        Delta_y = (int)leftPupil.y - (int)yCenter;
-        Log.i(TAG,"xCenter"+String.valueOf(xCenter));
+        /*Delta_x = leftPupil.x - center.x;//totally correct subtraction
+        Delta_y = leftPupil.y - center.y;*/
+        Point Delta = new Point(leftPupil.x - center.x, leftPupil.y - center.y);
+        Delta.x += (leftEyeRegion_x+face.x);
+        Delta.y += (eye_region_top+face.y);
+
+        Log.i(TAG,"xCenter"+String.valueOf(center.x));
         Log.i(TAG,"left_x"+String.valueOf(leftPupil.x));
-        Log.i(TAG,"Delta_x"+String.valueOf(Delta_x));
-        Log.i(TAG,"yCenter"+String.valueOf(yCenter));
+        Log.i(TAG,"Delta_x"+String.valueOf(Delta.x));
+        Log.i(TAG,"yCenter"+String.valueOf(center.y));
         Log.v("left_y","left_y0"+String.valueOf(leftPupil.y));
-        Log.i(TAG,"Delta_y"+String.valueOf(Delta_y));
-        writeTo(Delta_x,Delta_y,time);
+        Log.i(TAG,"Delta_y"+String.valueOf(Delta.y));
+        writeTo(Delta.x,Delta.y,time);
 
         // draw eye centers
         //Core.circle(mGray, rightPupil, 3, FACE_RECT_COLOR);
         Core.circle(frame_gray, leftPupil, 3, FACE_RECT_COLOR);
 
 
-        d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
+        //d = Math.sqrt( (leftPupil.x-=xCenter)*leftPupil.x + (leftPupil.y-=yCenter)*leftPupil.y);
 
 
 
-        angle1 = Math.toDegrees(Math.atan(Delta_y / Delta_x));
+        //angle1 = Math.toDegrees(Math.atan(Delta_y / Delta_x));
 
 
         Log.v("left_y","left_y1"+leftPupil.y);
         //Log.v("eye center","detected"+d);
-        addEntry(Delta_x,d,time);
+        addEntry(Delta.x,Delta.y,time);
 
 
         return frame_gray;
