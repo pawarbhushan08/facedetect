@@ -48,6 +48,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import wseemann.media.FFmpegMediaMetadataRetriever;
 
@@ -95,7 +96,7 @@ public class EyeTrackingActivity extends Activity{
     static double d;
     static double angle,angle1,angle2,angle3,angle4;
     static double time;
-    static double Delta_x,Delta_y;
+
 
     private Button button,savechart;
 
@@ -104,6 +105,14 @@ public class EyeTrackingActivity extends Activity{
     //Text file
 
     private int count = 0;
+    private int cnt1 =0;
+    String typeNyst="";
+
+    public ArrayList<Double> Delta_x = new ArrayList<Double>();
+    public ArrayList<Double> Delta_y = new ArrayList<Double>();
+    //double[] Delta_x = new double[500];
+    //double[] Delta_y = new double[500];
+
 
     String datatoCollect="Init";
 
@@ -255,7 +264,11 @@ public class EyeTrackingActivity extends Activity{
         }*/
         Toast.makeText(EyeTrackingActivity.this, "Graph Implemented!", Toast.LENGTH_LONG).show();
 
+        typeNyst = typeDetect(Delta_x,Delta_y);
+
     }
+
+
 
     public void addListenerOnButton() {
 
@@ -269,6 +282,7 @@ public class EyeTrackingActivity extends Activity{
             public void onClick(View arg0) {
 
                 Intent intent = new Intent(context, Results.class);
+                intent.putExtra("Nystagmus_Type",typeNyst);
                 //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
 
@@ -659,9 +673,9 @@ public class EyeTrackingActivity extends Activity{
     private Mat findEyes(Mat frame_gray, Rect face, long time) {
 
 
-        org.opencv.core.Size s = new Size(3,3);
+        /*org.opencv.core.Size s = new Size(3,3);
         Imgproc.GaussianBlur(frame_gray,frame_gray,s,2);
-        Log.v("Gaussian","gaussian blur done");
+        Log.v("Gaussian","gaussian blur done");*/
 
     	Mat faceROI = frame_gray.submat(face);
 
@@ -727,6 +741,10 @@ public class EyeTrackingActivity extends Activity{
         Log.i(TAG,"Delta_y"+String.valueOf(Delta.y));
         writeTo(Delta.x,Delta.y,time);
 
+        Delta_x.add(Delta.x);
+        Delta_y.add(Delta.y);
+
+
         // draw eye centers
         //Core.circle(mGray, rightPupil, 3, FACE_RECT_COLOR);
         Core.circle(frame_gray, leftPupil, 3, FACE_RECT_COLOR);
@@ -745,6 +763,120 @@ public class EyeTrackingActivity extends Activity{
 
 
         return frame_gray;
+    }
+    public static double calculateAverage(ArrayList<Double>lists) {
+        Double sum = 0.0;
+        if(!lists.isEmpty()) {
+            for (Double list : lists) {
+                sum += list;
+            }
+            return sum.doubleValue() / lists.size();
+        }
+        return sum;
+    }
+    public static double variance(ArrayList<Double> list) {
+        double sumDiffsSquared = 0.0;
+        double avg = calculateAverage(list);
+        for (int i = 0; i < list.size(); i++) {
+            Double value = list.get(i);
+            double diff = value - avg;
+            diff *= diff;
+            sumDiffsSquared += diff;
+        }
+        return sumDiffsSquared  / (list.size()-1);
+    }
+    public static String typeDetect(ArrayList<Double> delta_x, ArrayList<Double> delta_y){
+        ArrayList<Integer> binary;
+        String Nyst="";
+        Log.v("Delta_x ",""+delta_x);
+        Log.v("Delta_y ",""+delta_y);
+        double varDelta_x = variance(delta_x);
+        double varDelta_y = variance(delta_y);
+        Log.v("Variance_x",""+varDelta_x);
+        Log.v("Variance_y",""+varDelta_y);
+        if(varDelta_x > varDelta_y){
+            Log.v("Nystagmus","Horizontal Type");
+            binary = encoder(delta_x);
+            Log.v("Binary Seq",": "+binary);
+            Log.v("Binary seq",": "+binary.size());
+            int typeInt = findSequence(binary);
+            if(typeInt==0 || typeInt==1) {
+                Log.v("Nystagmus", "Left Beat Nystagmus");
+                Nyst = "Horizontal-Left Beat Nystagmus";
+            }
+            else {
+                Log.v("Nystagmus", "Right Beat Nystagmus");
+                Nyst = "Horizontal-Right Beat Nystagmus";
+            }
+        }
+        else if(varDelta_x < varDelta_y){
+            Log.v("Nystagmus","Vertical Type");
+            binary = encoder(delta_y);
+            Log.v("Binary Seq",": "+binary);
+            Log.v("Binary seq",": "+binary.size());
+            int typeInt = findSequence(binary);
+            if(typeInt==0 || typeInt==1) {
+                Log.v("Nystagmus", "Down Beat Nystagmus");
+                Nyst = "Vertical-Down Beat Nystagmus";
+            }
+            else {
+                Log.v("Nystagmus", "Up Beat Nystagmus");
+                Nyst = "Vertical-Up Beat Nystagmus";
+            }
+        }
+        else{
+            Log.v("Nystagmus","Couldn't recognize");
+        }
+        return Nyst;
+
+    }
+
+    public static int findSequence(ArrayList<Integer> binary) {
+
+        int[] typeInt = new int[4];
+        for (int i = 2; i < binary.size(); i++) {
+            int Ele0 = binary.get(i - 2);
+            int Ele1 = binary.get(i - 1);
+            int Ele2 = binary.get(i);
+            //int Ele3 = binary.get(i);
+            if (Ele0 == 1 && Ele1 == 1 && Ele2 == 0) {
+                typeInt[0] += 1;
+            } else if (Ele0 == 0 && Ele1 == 1 && Ele2 == 0) {
+                typeInt[1] += 1;
+            } else if (Ele0 == 1 && Ele1 == 0 && Ele2 == 1) {
+                typeInt[2] += 1;
+            } else if (Ele0 == 0 && Ele1 == 0 && Ele2 == 1) {
+                typeInt[3] += 1;
+            }
+            Log.v("typeint", "" + Arrays.toString(typeInt));
+        }
+        int max = typeInt[0];
+
+        int index = 0;
+        for (int i = 0; i < typeInt.length; i++) {
+            if (typeInt[i] > max) {
+                max = typeInt[i];
+                index = i;
+            }
+        }
+        Log.v("index of max value", ":" + index);
+
+        return index;
+    }
+
+    public static ArrayList<Integer> encoder(ArrayList<Double> delta) {
+        ArrayList<Integer> e = new ArrayList<>();
+        for (int i = 1; i < delta.size(); i++){
+            Double value1 = delta.get(i-1);
+            Double value2 = delta.get(i);
+            if(value2>=value1){
+                e.add(1);
+            }
+            else
+                e.add(0);
+        }
+     return e;
+
     }
 
     /*private class Decoder extends AsyncTask<File, Integer, Integer> {

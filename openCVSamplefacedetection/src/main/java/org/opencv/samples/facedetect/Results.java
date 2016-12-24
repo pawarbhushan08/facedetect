@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -30,6 +31,7 @@ public class Results extends Activity {
     private RadioGroup gndr;
     private RadioButton selectedBtn;
     private EditText examiner;
+    private TextView typeNyst;
     Image image = null;
 
     private static String FILE = "/sdcard/ReportFile.pdf";
@@ -41,6 +43,7 @@ public class Results extends Activity {
             Font.BOLD);
     private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,
             Font.BOLD);
+    String datatoCollect="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,8 +60,12 @@ public class Results extends Activity {
         examiner = (EditText)findViewById(R.id.examiner);
 
 
+        Intent intent = getIntent();
+        datatoCollect = intent.getStringExtra("Nystagmus_Type");
+        Log.v("eyeSelect0",datatoCollect);
 
-
+        typeNyst = (TextView)findViewById(R.id.TON);
+        typeNyst.setText(datatoCollect);
         addListenerOnButton();
     }
 
@@ -145,6 +152,10 @@ public class Results extends Activity {
             addEmptyLine(preface, 1);
 
             preface.add(new Paragraph("Examiner: "+examiner.getText(), catFont));
+
+            addEmptyLine(preface, 1);
+
+            preface.add(new Paragraph("Nystagmus Detected: "+typeNyst.getText(), catFont));
 
             addEmptyLine(preface, 1);
             preface.add(new Paragraph("Result: "+"", catFont));
