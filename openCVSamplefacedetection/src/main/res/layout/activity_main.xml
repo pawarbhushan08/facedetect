@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="horizontal"
-    android:weightSum="1">
+    android:baselineAligned="false"
+    tools:context=".AndroidVideoCaptureExample" >
 
     <LinearLayout
-        android:id="@+id/camera_preview"
-        android:layout_width="481dp"
+        android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:orientation="horizontal" />
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/buttonsLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:weightSum="1">
-
+        <!-- Capture picture button -->
+        <!--<Button
+            android:id="@+id/btnCapturePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Take a Picture"
+            android:layout_marginBottom="10dp"/>-->
         <RadioGroup
             android:id="@+id/eyeSelect"
             android:layout_width="wrap_content"
@@ -28,42 +30,58 @@
                 android:id="@+id/rightEye"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Right Eye"
+                android:text="@string/right_eye"
                 android:checked="true" />
 
             <RadioButton
                 android:id="@+id/leftEye"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Left Eye" />
+                android:text="@string/left_eye" />
 
         </RadioGroup>
-        <Button
-            android:id="@+id/button_ChangeCamera"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="Switch Camera"
-            android:layout_weight="0.16" />
 
+        <!-- Record video button -->
         <Button
-            android:id="@+id/button_capture"
-            android:layout_width="match_parent"
+            android:id="@+id/btnRecordVideo"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="Capture/Stop"
-            android:layout_weight="0.16" />
+            android:text="Record Video" />
         <Button
             android:id="@+id/button1"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="Proceed" />
-
-
-
+            android:text="Proceed"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="10dp">
 
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Preview"
+            android:padding="10dp"
+            android:textSize="15dp"/>
+
+        <!-- To display picture taken -->
+        <!--<ImageView
+            android:id="@+id/imgPreview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />-->
+
+        <!-- To preview video recorded -->
+        <VideoView
+            android:id="@+id/videoPreview"
+            android:layout_width="wrap_content"
+            android:layout_height="400dp"
+            android:visibility="gone" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -82,9 +82,9 @@ application
 ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:36:5-57:19
 MERGED from [com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.1] D:\face-detection1\openCVSamplefacedetection\build\intermediates\exploded-aar\com.github.wseemann\FFmpegMediaMetadataRetriever\1.0.1\AndroidManifest.xml:11:5-20
 	android:label
-		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:38:9-41
+		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:38:9-46
 	android:icon
-		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:37:9-38
+		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:37:9-41
 	android:theme
 		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:39:9-67
 activity#org.opencv.samples.facedetect.AndroidVideoCaptureExample
@@ -92,7 +92,7 @@ ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest
 	android:screenOrientation
 		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:44:13-50
 	android:label
-		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:43:13-45
+		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:43:13-50
 	android:configChanges
 		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:42:13-63
 	android:name
@@ -112,7 +112,7 @@ ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest
 	android:screenOrientation
 		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:55:13-50
 	android:label
-		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:54:13-45
+		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:54:13-50
 	android:configChanges
 		ADDED from D:\face-detection1\openCVSamplefacedetection\src\main\AndroidManifest.xml:53:13-63
 	android:name

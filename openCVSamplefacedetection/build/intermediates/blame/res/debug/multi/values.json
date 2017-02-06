@@ -58,6 +58,139 @@
                         "endOffset": 106
                     }
                 }
+            },
+            {
+                "to": {
+                    "startLine": 6,
+                    "startColumn": 4,
+                    "startOffset": 474,
+                    "endColumn": 41,
+                    "endOffset": 511
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 149,
+                        "endColumn": 41,
+                        "endOffset": 186
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 7,
+                    "startColumn": 4,
+                    "startOffset": 516,
+                    "endColumn": 45,
+                    "endOffset": 557
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 239,
+                        "endColumn": 45,
+                        "endOffset": 280
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 8,
+                    "startColumn": 4,
+                    "startOffset": 562,
+                    "endColumn": 37,
+                    "endOffset": 595
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 111,
+                        "endColumn": 37,
+                        "endOffset": 144
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 9,
+                    "startColumn": 4,
+                    "startOffset": 600,
+                    "endColumn": 37,
+                    "endOffset": 633
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 8,
+                        "startColumn": 4,
+                        "startOffset": 343,
+                        "endColumn": 37,
+                        "endOffset": 376
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 10,
+                    "startColumn": 4,
+                    "startOffset": 638,
+                    "endColumn": 57,
+                    "endOffset": 691
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 285,
+                        "endColumn": 57,
+                        "endOffset": 338
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 11,
+                    "startColumn": 4,
+                    "startOffset": 696,
+                    "endColumn": 47,
+                    "endOffset": 739
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 191,
+                        "endColumn": 47,
+                        "endOffset": 234
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 12,
+                    "startColumn": 4,
+                    "startOffset": 744,
+                    "endColumn": 49,
+                    "endOffset": 789
+                },
+                "from": {
+                    "file": "D:\\face-detection1\\openCVSamplefacedetection\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 381,
+                        "endColumn": 49,
+                        "endOffset": 426
+                    }
+                }
             }
         ]
     }

@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OCV Face Detection</string>
+    <string name="male">MALE</string>
+    <string name="female">FEMALE</string>
+    <string name="right_eye">Right Eye</string>
+    <string name="left_eye">Left Eye</string>
+    <string name="record_a_video">Record a Video</string>
+    <string name="next">Next</string>
+    <string name="save_chart">Save Chart</string>
 </resources>

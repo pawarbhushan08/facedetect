@@ -4,4 +4,11 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <string name="app_name">OCV Face Detection</string>
+    <string name="female">FEMALE</string>
+    <string name="left_eye">Left Eye</string>
+    <string name="male">MALE</string>
+    <string name="next">Next</string>
+    <string name="record_a_video">Record a Video</string>
+    <string name="right_eye">Right Eye</string>
+    <string name="save_chart">Save Chart</string>
 </resources>

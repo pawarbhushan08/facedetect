@@ -24,6 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+/**
+ * This Activity is implemented to create a PDF file as a Report document of the analysis.
+ */
 public class Results extends Activity {
     private EditText patientName;
     private EditText dob;
@@ -44,6 +47,7 @@ public class Results extends Activity {
     private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,
             Font.BOLD);
     String datatoCollect="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +57,9 @@ public class Results extends Activity {
         dob = (EditText)findViewById(R.id.DOB);
 
         gndr = (RadioGroup) findViewById(R.id.gender);
-        int selectedId = gndr.getCheckedRadioButtonId();
+        /*int selectedId = gndr.getCheckedRadioButtonId();
         Log.d("ID",""+selectedId);
-        selectedBtn = (RadioButton) findViewById(selectedId);
+        selectedBtn = (RadioButton) findViewById(selectedId);*/
 
         examiner = (EditText)findViewById(R.id.examiner);
 
@@ -67,8 +71,13 @@ public class Results extends Activity {
         typeNyst = (TextView)findViewById(R.id.TON);
         typeNyst.setText(datatoCollect);
         addListenerOnButton();
+
     }
 
+    /**
+     * The button Save is implemented to save the document on SD card.
+     * The button Exit is implemented to Exit from the application.
+     */
     public void addListenerOnButton() {
 
         final Context context = this;
@@ -82,6 +91,9 @@ public class Results extends Activity {
 
 
                 try {
+                    int selectedId = gndr.getCheckedRadioButtonId();
+                    Log.d("ID",""+selectedId);
+                    selectedBtn = (RadioButton) findViewById(selectedId);
                     Document document = new Document();
                     PdfWriter.getInstance(document, new FileOutputStream(FILE));
                     document.open();
@@ -115,17 +127,12 @@ public class Results extends Activity {
 
     }
 
-      // iText allows to add metadata to the PDF which can be viewed in your Adobe
-        // Reader
-        // under File -> Properties
-        /*private void addMetaData(Document document) {
-            document.addTitle("My first PDF");
-            document.addSubject("Using iText");
-            document.addKeywords("Java, PDF, iText");
-            document.addAuthor("Lars Vogel");
-            document.addCreator("Lars Vogel");
-        }*/
-
+    /**
+     * This method does formatting of the PDF document and the content in it.
+     * @param document
+     * @throws DocumentException
+     * @throws IOException
+     */
         private void addTitlePage(Document document)
                 throws DocumentException, IOException {
             Paragraph preface = new Paragraph();
@@ -168,9 +175,6 @@ public class Results extends Activity {
             image.scalePercent(scaler);
             Log.v("Image Loaded",""+image.type());
 
-
-                //image.scaleAbsolute(150f, 150f);
-                //image.scalePercent(-50f);
             preface.add(image);
 
             addEmptyLine(preface,4);
@@ -182,92 +186,12 @@ public class Results extends Activity {
             document.newPage();
         }
 
-       /* private void addContent(Document document) throws DocumentException {
-            Anchor anchor = new Anchor("First Chapter", catFont);
-            anchor.setName("First Chapter");
 
-            // Second parameter is the number of the chapter
-            Chapter catPart = new Chapter(new Paragraph(anchor), 1);
-
-            Paragraph subPara = new Paragraph("Subcategory 1", subFont);
-            Section subCatPart = catPart.addSection(subPara);
-            subCatPart.add(new Paragraph("Hello"));
-
-            subPara = new Paragraph("Subcategory 2", subFont);
-            subCatPart = catPart.addSection(subPara);
-            subCatPart.add(new Paragraph("Paragraph 1"));
-            subCatPart.add(new Paragraph("Paragraph 2"));
-            subCatPart.add(new Paragraph("Paragraph 3"));
-
-            // add a list
-            createList(subCatPart);
-            Paragraph paragraph = new Paragraph();
-            addEmptyLine(paragraph, 5);
-            subCatPart.add(paragraph);
-
-            // add a table
-            createTable(subCatPart);
-
-            // now add all this to the document
-            document.add(catPart);
-
-            // Next section
-            anchor = new Anchor("Second Chapter", catFont);
-            anchor.setName("Second Chapter");
-
-            // Second parameter is the number of the chapter
-            catPart = new Chapter(new Paragraph(anchor), 1);
-
-            subPara = new Paragraph("Subcategory", subFont);
-            subCatPart = catPart.addSection(subPara);
-            subCatPart.add(new Paragraph("This is a very important message"));
-
-            // now add all this to the document
-            document.add(catPart);
-
-        }*/
-
-        /*private void createTable(Section subCatPart)
-                throws BadElementException {
-            PdfPTable table = new PdfPTable(3);
-
-            // t.setBorderColor(BaseColor.GRAY);
-            // t.setPadding(4);
-            // t.setSpacing(4);
-            // t.setBorderWidth(1);
-
-            PdfPCell c1 = new PdfPCell(new Phrase("Table Header 1"));
-            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-            table.addCell(c1);
-
-            c1 = new PdfPCell(new Phrase("Table Header 2"));
-            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-            table.addCell(c1);
-
-            c1 = new PdfPCell(new Phrase("Table Header 3"));
-            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-            table.addCell(c1);
-            table.setHeaderRows(1);
-
-            table.addCell("1.0");
-            table.addCell("1.1");
-            table.addCell("1.2");
-            table.addCell("2.1");
-            table.addCell("2.2");
-            table.addCell("2.3");
-
-            subCatPart.add(table);
-
-        }
-
-        private void createList(Section subCatPart) {
-            List list = new List(true, false, 10);
-            list.add(new ListItem("First point"));
-            list.add(new ListItem("Second point"));
-            list.add(new ListItem("Third point"));
-            subCatPart.add(list);
-        }*/
-
+    /**
+     * This method adds the empty line in the document.
+     * @param paragraph
+     * @param number
+     */
         private void addEmptyLine(Paragraph paragraph, int number) {
             for (int i = 0; i < number; i++) {
                 paragraph.add(new Paragraph(" "));

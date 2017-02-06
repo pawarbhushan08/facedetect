@@ -50,7 +50,7 @@
         <RadioButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MALE"
+        android:text="@string/male"
         android:id="@+id/male"
         android:layout_below="@+id/DOB"
         android:layout_alignParentLeft="true"
@@ -60,7 +60,7 @@
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="FEMALE"
+            android:text="@string/female"
             android:id="@+id/female"
             android:checked="false"
             android:layout_below="@+id/DOB"

@@ -34,13 +34,13 @@
 
 
     <application
-        android:icon="@drawable/icon"
-        android:label="@string/app_name"
+        android:icon="@drawable/eyeicon"
+        android:label="Nystagmus Detetection"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         <activity
             android:name=".AndroidVideoCaptureExample"
             android:configChanges="keyboardHidden|orientation"
-            android:label="@string/app_name"
+            android:label="Nystagmus Detetection"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,7 +51,7 @@
         <activity
             android:name=".EyeTrackingActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:label="@string/app_name"
+            android:label="Nystagmus Detetection"
             android:screenOrientation="landscape"/>
         <activity android:name=".Results"></activity>
     </application>
